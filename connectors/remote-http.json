@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "misarreach": {
+      "type": "streamable-http",
+      "url": "https://api.misar.io/reach/mcp",
+      "headers": {
+        "Authorization": "Bearer mrk_YOUR_KEY_HERE"
+      }
+    }
+  }
+}

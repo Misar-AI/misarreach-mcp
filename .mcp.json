@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "misarreach": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@misarreach/mcp@latest"
+      ],
+      "env": {
+        "MISARREACH_API_KEY": "${MISARREACH_API_KEY}"
+      }
+    }
+  }
+}

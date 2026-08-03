@@ -1,0 +1,11 @@
+{
+  "note": "Claude.ai → Settings → Connectors → Add custom connector",
+  "name": "MisarReach",
+  "remote_mcp_url": "https://api.misar.io/reach/mcp",
+  "authentication": {
+    "type": "bearer",
+    "header": "Authorization",
+    "value": "Bearer mrk_YOUR_KEY_HERE",
+    "obtain_at": "https://reach.misar.io/settings/api-keys"
+  }
+}

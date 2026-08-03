@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "misarreach-key",
+      "description": "MisarReach API key (mrk_…) — create one at https://reach.misar.io/settings/api-keys",
+      "password": true
+    }
+  ],
+  "servers": {
+    "misarreach": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@misarreach/mcp@latest"
+      ],
+      "env": {
+        "MISARREACH_API_KEY": "${input:misarreach-key}"
+      }
+    }
+  }
+}

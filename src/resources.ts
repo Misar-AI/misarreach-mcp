@@ -1,0 +1,61 @@
+import { apiFetch } from "./lib/api-client.js";
+
+/**
+ * MCP resources — read-only context a client can attach directly, without
+ * spending a tool call. Kept small: some clients fetch every resource eagerly,
+ * so anything large or paginated belongs in a tool.
+ */
+
+export interface ResourceDefinition {
+  uri: string;
+  name: string;
+  description: string;
+  mimeType: string;
+  read: () => Promise<unknown>;
+}
+
+export const RESOURCES: ResourceDefinition[] = [
+  {
+    uri: "misarreach://channels",
+    name: "Connected channels",
+    description:
+      "Which outreach channels are connected and healthy. Read this before designing any sequence — a step on a disconnected channel silently never sends.",
+    mimeType: "application/json",
+    read: () => apiFetch("/channels"),
+  },
+  {
+    uri: "misarreach://lead-lists",
+    name: "Lead lists",
+    description: "Your saved lead lists with sizes, so a campaign targets a real audience.",
+    mimeType: "application/json",
+    read: () => apiFetch("/lead-lists"),
+  },
+  {
+    uri: "misarreach://pipeline",
+    name: "Deal pipeline",
+    description: "Current pipeline by stage — the baseline for any performance question.",
+    mimeType: "application/json",
+    read: () => apiFetch("/deals/pipeline"),
+  },
+  {
+    uri: "misarreach://autopilot/status",
+    name: "Autopilot status",
+    description: "Whether autopilot is running, and its current sending posture.",
+    mimeType: "application/json",
+    read: () => apiFetch("/autopilot/status"),
+  },
+];
+
+const BY_URI = new Map(RESOURCES.map((r) => [r.uri, r]));
+
+export function listResources() {
+  return RESOURCES.map(({ uri, name, description, mimeType }) => ({ uri, name, description, mimeType }));
+}
+
+export async function readResource(uri: string) {
+  const resource = BY_URI.get(uri);
+  if (!resource) return null;
+  return {
+    contents: [{ uri, mimeType: resource.mimeType, text: JSON.stringify(await resource.read(), null, 2) }],
+  };
+}

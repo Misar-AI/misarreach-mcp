@@ -1,0 +1,88 @@
+{
+  "name": "@misarreach/mcp",
+  "version": "2.0.0",
+  "description": "MisarReach MCP server \u2014 find and enrich leads, verify emails, run multi-channel outreach, and manage the sales pipeline from Claude, Cursor, VS Code, Windsurf, and any MCP client.",
+  "homepage": "https://www.misarreach.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrgulshanyadav/misarreach-mcp.git"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "misarreach-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "sales",
+    "outreach",
+    "lead-generation",
+    "lead-enrichment",
+    "email-verification",
+    "multi-channel-outreach",
+    "crm",
+    "sales-pipeline",
+    "automation",
+    "analytics",
+    "claude",
+    "claude-code",
+    "cursor",
+    "windsurf",
+    "vscode",
+    "ai-agent",
+    "misarreach"
+  ],
+  "author": "Misar AI <support@misar.io>",
+  "license": "MIT",
+  "types": "./dist/index.d.ts",
+  "mcpName": "io.github.mrgulshanyadav/misarreach-mcp",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./registry": {
+      "types": "./dist/registry.d.ts",
+      "import": "./dist/registry.js"
+    },
+    "./http": {
+      "types": "./dist/http.d.ts",
+      "import": "./dist/http.js"
+    }
+  },
+  "files": [
+    "dist",
+    "smithery.yaml",
+    "server.json",
+    "README.md",
+    "skills",
+    "agents",
+    "connectors"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/mrgulshanyadav/misarreach-mcp/issues"
+  }
+}

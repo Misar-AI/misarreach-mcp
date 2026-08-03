@@ -1,0 +1,212 @@
+{
+  "serverInfo": {
+    "name": "MisarReach",
+    "version": "2.0.0",
+    "logoUrl": "https://reach.misar.io/logo-light.png"
+  },
+  "websiteUrl": "https://www.misarreach.com",
+  "documentationUrl": "https://docs.misar.io/reach/mcp",
+  "authentication": {
+    "required": true,
+    "schemes": [
+      "bearer"
+    ],
+    "tokenUrl": "https://reach.misar.io/settings/api-keys"
+  },
+  "capabilities": {
+    "tools": true,
+    "prompts": true,
+    "resources": true
+  },
+  "tools": [
+    {
+      "name": "list_leads",
+      "description": "List saved leads for the authenticated user. Supports pagination and search by name, email, or company."
+    },
+    {
+      "name": "search_leads",
+      "description": "Start an AI-powered lead search job. Returns a jobId immediately — poll get_search_job_status for results. Consumes search credits."
+    },
+    {
+      "name": "get_search_job_status",
+      "description": "Poll the status and results of a lead search job."
+    },
+    {
+      "name": "submit_lead_feedback",
+      "description": "Submit positive or negative feedback on an AI-generated lead message to improve future output quality."
+    },
+    {
+      "name": "discover_companies",
+      "description": "Discover companies matching criteria via Hunter.io. Optionally fetch contact emails for each company."
+    },
+    {
+      "name": "enrich_lead",
+      "description": "Enrich a lead with person and company data (seniority, department, LinkedIn, phone, company size, industry). Consumes enrichment credits."
+    },
+    {
+      "name": "verify_emails",
+      "description": "Verify email deliverability for one or more email addresses. Consumes verification credits."
+    },
+    {
+      "name": "score_leads",
+      "description": "Trigger on-demand AI scoring for all unscored leads in a job, or a specific set of lead IDs. Runs in background — returns immediately with count. Consumes AI credits."
+    },
+    {
+      "name": "list_lead_lists",
+      "description": "List Hunter.io lead lists associated with the account."
+    },
+    {
+      "name": "create_lead_list",
+      "description": "Create a new Hunter.io lead list."
+    },
+    {
+      "name": "sync_lead_list",
+      "description": "Sync a Hunter.io lead list into local lead records."
+    },
+    {
+      "name": "preview_message",
+      "description": "Generate a sample AI-personalised outreach message for a person. Public endpoint — no auth required."
+    },
+    {
+      "name": "send_to_campaign",
+      "description": "Bulk-import selected lead IDs into a campaign's contact list. Leads must belong to the authenticated user."
+    },
+    {
+      "name": "list_deals",
+      "description": "List deals with optional status filter. Returns deals array plus revenue summary (total, closed, pipeline)."
+    },
+    {
+      "name": "create_deal",
+      "description": "Create a new deal linked to a lead email."
+    },
+    {
+      "name": "update_deal",
+      "description": "Update a deal's status, value, or notes."
+    },
+    {
+      "name": "get_pipeline",
+      "description": "Get the full sales pipeline board with deals grouped by stage (new, contacted, interested, meeting, proposal, closed, lost) plus revenue totals."
+    },
+    {
+      "name": "move_deal_stage",
+      "description": "Move a deal to a new pipeline stage (drag-and-drop equivalent)."
+    },
+    {
+      "name": "start_autopilot",
+      "description": "Start an AI autopilot run for outreach automation. Provide a goal and the agent runs fire-and-forget. Returns runId — poll get_autopilot_status for progress. Consumes autopilot credits."
+    },
+    {
+      "name": "list_autopilot_runs",
+      "description": "List past autopilot runs with their status and summary results."
+    },
+    {
+      "name": "get_autopilot_status",
+      "description": "Get the current status and progress of a specific autopilot run."
+    },
+    {
+      "name": "get_channels_status",
+      "description": "Get the status, configuration, and delivery stats for all outreach channels (WhatsApp, SMS, push notifications)."
+    },
+    {
+      "name": "update_channel",
+      "description": "Enable or disable a specific outreach channel (whatsapp, sms, or push)."
+    },
+    {
+      "name": "get_sales_agent_config",
+      "description": "Fetch the current user's AI sales agent configuration."
+    },
+    {
+      "name": "update_sales_agent_config",
+      "description": "Update the AI sales agent configuration (enable/disable, cal link, offer price, reply limits, confidence threshold)."
+    },
+    {
+      "name": "get_sales_agent_actions",
+      "description": "Fetch today's AI sales agent actions and summary stats (total actions, deals closed, flagged for human review)."
+    },
+    {
+      "name": "process_sales_agent",
+      "description": "Run the AI sales agent pipeline on a conversation — decides the next action and optionally generates a reply. Logs the action to the agent activity feed."
+    }
+  ],
+  "prompts": [
+    {
+      "name": "build_lead_list",
+      "description": "Find, enrich, verify and score a target lead list before any outreach.",
+      "arguments": [
+        {
+          "name": "icp",
+          "description": "Ideal customer profile — industry, size, geography, role",
+          "required": true
+        },
+        {
+          "name": "count",
+          "description": "How many leads to target (default 50)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "outreach_sequence",
+      "description": "Design and preview a multi-channel sequence, sending only after approval.",
+      "arguments": [
+        {
+          "name": "list_id",
+          "description": "Lead list to target",
+          "required": false
+        },
+        {
+          "name": "goal",
+          "description": "What the sequence should achieve",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "pipeline_review",
+      "description": "Review deal pipeline health and recommend the next actions.",
+      "arguments": [
+        {
+          "name": "period",
+          "description": "Time window, e.g. 30d",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "autopilot_audit",
+      "description": "Check what autopilot has been doing and whether it should keep running.",
+      "arguments": []
+    },
+    {
+      "name": "sales_agent_tuning",
+      "description": "Review the AI sales agent's configuration and recent actions.",
+      "arguments": []
+    }
+  ],
+  "resources": [
+    {
+      "uri": "misarreach://channels",
+      "name": "Connected channels",
+      "description": "Which outreach channels are connected and healthy. Read this before designing any sequence — a step on a disconnected channel silently never sends.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "misarreach://lead-lists",
+      "name": "Lead lists",
+      "description": "Your saved lead lists with sizes, so a campaign targets a real audience.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "misarreach://pipeline",
+      "name": "Deal pipeline",
+      "description": "Current pipeline by stage — the baseline for any performance question.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "misarreach://autopilot/status",
+      "name": "Autopilot status",
+      "description": "Whether autopilot is running, and its current sending posture.",
+      "mimeType": "application/json"
+    }
+  ]
+}

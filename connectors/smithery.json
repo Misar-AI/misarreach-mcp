@@ -1,0 +1,7 @@
+{
+  "qualifiedName": "misar/misarreach-mcp",
+  "install": "npx -y @smithery/cli install misar/misarreach-mcp --client claude",
+  "config": {
+    "apiKey": "mrk_YOUR_KEY_HERE"
+  }
+}

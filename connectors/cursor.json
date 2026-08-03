@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "misarreach": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@misarreach/mcp@latest"
+      ],
+      "env": {
+        "MISARREACH_API_KEY": "mrk_YOUR_KEY_HERE"
+      }
+    },
+    "misarreach-remote": {
+      "url": "https://api.misar.io/reach/mcp",
+      "headers": {
+        "Authorization": "Bearer mrk_YOUR_KEY_HERE"
+      }
+    }
+  }
+}

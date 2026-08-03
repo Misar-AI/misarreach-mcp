@@ -1,0 +1,53 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.mrgulshanyadav/misarreach-mcp",
+  "title": "MisarReach MCP Server",
+  "description": "Find leads, enrich and score them, run multi-channel outreach, and manage the sales pipeline — from any AI assistant.",
+  "version": "2.0.0",
+  "repository": {
+    "url": "https://github.com/mrgulshanyadav/misarreach-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://www.misarreach.com",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@misarreach/mcp",
+      "version": "2.0.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MISARREACH_API_KEY",
+          "description": "Your MisarReach API key (mrk_…). Create one at https://reach.misar.io/settings/api-keys, or omit it and run the \"login\" tool to authenticate via browser.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
+        },
+        {
+          "name": "MISARREACH_BASE_URL",
+          "description": "Override the API base URL. Only needed for self-hosted instances.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.misar.io/reach/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "MisarReach API key. Format: Bearer mrk_… — create one at https://reach.misar.io/settings/api-keys",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
