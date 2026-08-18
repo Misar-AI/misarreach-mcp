@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Probe MCP endpoint
         run: |
-          curl -s -X POST https://mail.misar.io/api/mcp \
+          curl -s -X POST https://api.misar.io/reach/mcp \
             -H "Content-Type: application/json" \
             -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' \
             | jq -r '.result.tools | length | "Tools available: \(.)"' || echo "Probe sent (response may vary)"
