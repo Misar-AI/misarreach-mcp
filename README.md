@@ -162,6 +162,6 @@ Every action does.
 - Documentation — https://docs.misar.io/reach/mcp
 - Smithery — https://smithery.ai/server/misar/misarreach-mcp
 - npm — https://www.npmjs.com/package/@misarreach/mcp
-- Source — https://github.com/mrgulshanyadav/misarreach-mcp
+- Source — https://github.com/Misar-AI/misarreach-mcp
 
 MIT © [Misar AI](https://misar.io)

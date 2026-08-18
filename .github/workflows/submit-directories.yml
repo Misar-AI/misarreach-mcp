@@ -68,7 +68,7 @@ jobs:
             --body "## Add MisarReach MCP Server
 
           **Name**: MisarReach MCP Server
-          **Repository**: https://github.com/mrgulshanyadav/misarreach-mcp
+          **Repository**: https://github.com/Misar-AI/misarreach-mcp
           **npm**: https://www.npmjs.com/package/@misarreach/mcp
           **Category**: Email / Marketing
 
@@ -130,7 +130,7 @@ jobs:
             --title "Add MisarReach MCP Server" \
             --body "## MisarReach MCP Server
 
-          - **Repository**: https://github.com/mrgulshanyadav/misarreach-mcp
+          - **Repository**: https://github.com/Misar-AI/misarreach-mcp
           - **npm**: https://www.npmjs.com/package/@misarreach/mcp
           - **Category**: Email / Marketing
           - **Tools**: 32 tools — campaigns, contacts, templates, automations, analytics, deliverability, WhatsApp
@@ -158,7 +158,7 @@ jobs:
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST https://mcpmarket.com/api/submit-url \
             -H "Content-Type: application/json" \
-            -d '{"url":"https://github.com/mrgulshanyadav/misarreach-mcp"}')
+            -d '{"url":"https://github.com/Misar-AI/misarreach-mcp"}')
           echo "HTTP status: ${HTTP_STATUS}"
           {
             echo "### mcpmarket.com"
@@ -175,7 +175,7 @@ jobs:
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST https://mcpserverhub.net/api/submit \
             -H "Content-Type: application/json" \
-            -d '{"name":"MisarReach MCP Server","url":"https://github.com/mrgulshanyadav/misarreach-mcp","category":"sales","config":{"command":"npx","args":["@misarreach/mcp"],"env":{"MISARREACH_API_KEY":"<your_key>"}}}')
+            -d '{"name":"MisarReach MCP Server","url":"https://github.com/Misar-AI/misarreach-mcp","category":"sales","config":{"command":"npx","args":["@misarreach/mcp"],"env":{"MISARREACH_API_KEY":"<your_key>"}}}')
           echo "HTTP status: ${HTTP_STATUS}"
           {
             echo "### mcpserverhub.net"

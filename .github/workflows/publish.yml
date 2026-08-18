@@ -78,8 +78,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/mrgulshanyadav/misarreach-mcp:${{ steps.version.outputs.tag }}
-            ghcr.io/mrgulshanyadav/misarreach-mcp:latest
+            ghcr.io/misar-ai/misarreach-mcp:${{ steps.version.outputs.tag }}
+            ghcr.io/misar-ai/misarreach-mcp:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

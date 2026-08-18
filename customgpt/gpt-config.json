@@ -10,7 +10,7 @@
   ],
   "actions": [
     {
-      "openapi_url": "https://github.com/mrgulshanyadav/misarreach-mcp/raw/main/customgpt/openapi.json",
+      "openapi_url": "https://github.com/Misar-AI/misarreach-mcp/raw/main/customgpt/openapi.json",
       "auth": {
         "type": "bearer"
       }
