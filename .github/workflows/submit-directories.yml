@@ -64,20 +64,26 @@ jobs:
             echo "| MCP registry (official) | **MISSING** | publish.yml should have registered it |" >> "$GITHUB_STEP_SUMMARY"
           fi
 
-          # Read-only presence checks. A 200 means a page exists for us there.
+          # Presence checks by CONTENT, not status code. Smithery answers 200 for
+          # a URL that cannot exist (verified against a nonsense slug), so a
+          # status-only check reports every server as listed. Glama 404s
+          # honestly. Each entry carries a string that only a real listing has.
           for entry in \
-            "Smithery|https://smithery.ai/server/misar/${SLUG}" \
-            "mcp.so|https://mcp.so/server/${SLUG}" \
-            "Glama|https://glama.ai/mcp/servers" \
-            "mcpservers.org|https://mcpservers.org"
+            "Smithery|https://smithery.ai/server/@Misar-AI/${SLUG}|${SLUG}" \
+            "Glama|https://glama.ai/mcp/servers/Misar-AI/${SLUG}|${SLUG}" \
+            "mcp.so|https://mcp.so/server/${SLUG}|${SLUG}"
           do
-            NAME="${entry%%|*}"; URL="${entry#*|}"
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 25 "$URL" || echo "000")
-            case "$CODE" in
-              200) echo "| ${NAME} | reachable | ${URL} |" >> "$GITHUB_STEP_SUMMARY" ;;
-              403|429) echo "| ${NAME} | MANUAL | bot-protected (${CODE}) — submit from a browser: ${URL} |" >> "$GITHUB_STEP_SUMMARY" ;;
-              *) echo "| ${NAME} | not listed | HTTP ${CODE} — ${URL} |" >> "$GITHUB_STEP_SUMMARY" ;;
-            esac
+            NAME="${entry%%|*}"; REST="${entry#*|}"; URL="${REST%%|*}"; NEEDLE="${REST##*|}"
+            PAGE=$(curl -s -L --max-time 25 -A "Mozilla/5.0" "$URL" || true)
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 25 -A "Mozilla/5.0" "$URL" || echo "000")
+            if [ "$CODE" = "200" ] && printf '%s' "$PAGE" | grep -qi "$NEEDLE" \
+               && ! printf '%s' "$PAGE" | grep -qiE "not found|does not exist|404"; then
+              echo "| ${NAME} | LISTED | ${URL} |" >> "$GITHUB_STEP_SUMMARY"
+            elif [ "$CODE" = "403" ] || [ "$CODE" = "429" ]; then
+              echo "| ${NAME} | MANUAL | bot-protected (${CODE}) — submit from a browser: ${URL} |" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "| ${NAME} | not listed | HTTP ${CODE}, no listing content — ${URL} |" >> "$GITHUB_STEP_SUMMARY"
+            fi
           done
 
   attempt-api-submissions:
@@ -133,8 +139,7 @@ jobs:
             echo "- PulseMCP — https://www.pulsemcp.com/submit"
             echo "- Glama — https://glama.ai/mcp/servers (indexes public repos; claim the listing)"
             echo "- mcp.so — https://mcp.so/submit"
-            echo "- punkpeye/awesome-mcp-servers — open a PR from a fork"
-            echo "- Horatio-Li/awesome-mcp-servers — open a PR from a fork"
+            echo "- punkpeye/awesome-mcp-servers — PR #12443 open; Glama syncs from this list"
             echo
             echo "A fine-grained PAT with \`public_repo\` stored as \`DIRECTORY_PR_TOKEN\`"
             echo "would let the two awesome-list PRs be raised from CI; GITHUB_TOKEN"
