@@ -27,6 +27,11 @@ jobs:
       - name: Install dependencies
         run: npm install --ignore-scripts
 
+      # --ignore-scripts above means dist/ is absent, so npm warns the bin file
+      # does not exist and publishes a package whose entry point is missing.
+      - name: Build
+        run: npm run build
+
       - name: Publish to npm
         run: npm publish --access public
         env:
