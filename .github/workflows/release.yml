@@ -53,12 +53,23 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.version.outputs.tag }}
         run: |
-          gh release create "${TAG}" \
-            --title "MisarReach MCP Server ${TAG}" \
-            --notes-file /tmp/release-body.md \
-            --verify-tag \
-            server.json \
-            smithery.yaml
+          # Re-running a release must not hard-fail. `gh release create` errors
+          # with "a release with the same tag name already exists", which turns a
+          # harmless retag into a red run.
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "release ${TAG} exists — updating it"
+            gh release edit "${TAG}" \
+              --title "MisarReach MCP Server ${TAG}" \
+              --notes-file /tmp/release-body.md
+            gh release upload "${TAG}" server.json smithery.yaml --clobber
+          else
+            gh release create "${TAG}" \
+              --title "MisarReach MCP Server ${TAG}" \
+              --notes-file /tmp/release-body.md \
+              --verify-tag \
+              server.json \
+              smithery.yaml
+          fi
 
       - name: Trigger submit-directories workflow
         env:
