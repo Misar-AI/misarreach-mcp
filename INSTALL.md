@@ -40,7 +40,7 @@ npx -y @misarreach/mcp@latest
 | Smithery | `npx -y @smithery/cli install misar/misarreach-mcp --client claude` | `smithery.yaml` | Hosted, no local install |
 | ChatGPT (Custom GPT) | Actions → import schema | `customgpt/openapi.json` + `customgpt/gpt-config.json` | Bearer auth with your API key |
 | Any MCP client over HTTP | Streamable HTTP | `connectors/remote-http.json` | `https://api.misar.io/reach/mcp` |
-| MCP registry | `server.json` | `server.json`, `.well-known/` | `io.github.misar-ai/misarreach-mcp` |
+| MCP registry | `server.json` | `server.json`, `.well-known/` | `io.github.Misar-AI/misarreach-mcp` |
 
 ## Agents and skills
 

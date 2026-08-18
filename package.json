@@ -54,7 +54,7 @@
   "author": "Misar AI <support@misar.io>",
   "license": "MIT",
   "types": "./dist/index.d.ts",
-  "mcpName": "io.github.misar-ai/misarreach-mcp",
+  "mcpName": "io.github.Misar-AI/misarreach-mcp",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

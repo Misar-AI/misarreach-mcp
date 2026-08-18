@@ -121,7 +121,7 @@ jobs:
     permissions:
       contents: read
       # The registry trusts a GitHub OIDC token to prove control of the
-      # io.github.misar-ai namespace, so nothing long-lived is stored here.
+      # io.github.Misar-AI namespace, so nothing long-lived is stored here.
       # This is also why the repo had to move into the org: the namespace and
       # the OIDC claim have to name the same owner.
       id-token: write
