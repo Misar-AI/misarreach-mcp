@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.misar-ai/misarreach-mcp",
   "title": "MisarReach MCP Server",
-  "description": "Find leads, enrich and score them, run multi-channel outreach, and manage the sales pipeline \u2014 from any AI assistant.",
+  "description": "Find and enrich leads, run multi-channel outreach, and manage the sales pipeline.",
   "version": "5.0.3",
   "repository": {
     "url": "https://github.com/Misar-AI/misarreach-mcp",

@@ -102,3 +102,29 @@ jobs:
         env:
           COOLIFY_DEPLOY_URL: ${{ secrets.COOLIFY_DEPLOY_URL }}
           COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+
+  publish-registry:
+    name: Publish to the official MCP registry
+    needs: publish-npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The registry trusts a GitHub OIDC token to prove control of the
+      # io.github.misar-ai namespace, so nothing long-lived is stored here.
+      # This is also why the repo had to move into the org: the namespace and
+      # the OIDC claim have to name the same owner.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz" \
+            | tar xz mcp-publisher
+          ./mcp-publisher --version || true
+
+      - name: Authenticate via GitHub OIDC
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server.json
+        run: ./mcp-publisher publish
