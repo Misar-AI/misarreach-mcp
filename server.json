@@ -3,7 +3,7 @@
   "name": "io.github.Misar-AI/misarreach-mcp",
   "title": "MisarReach MCP Server",
   "description": "Find and enrich leads, run multi-channel outreach, and manage the sales pipeline.",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "repository": {
     "url": "https://github.com/Misar-AI/misarreach-mcp",
     "source": "github"
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "@misarreach/mcp",
-      "version": "5.0.3",
+      "version": "5.0.4",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
