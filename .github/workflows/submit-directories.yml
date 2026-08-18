@@ -1,0 +1,268 @@
+name: Submit to Directories
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  verify-npm:
+    name: Verify npm listing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check npm version
+        run: |
+          VERSION=$(npm view @misarreach/mcp version 2>/dev/null || echo "not found")
+          echo "npm version: $VERSION"
+          {
+            echo "### npm Registry"
+            echo "- Package: \`@misarreach/mcp\`"
+            echo "- Published version: \`${VERSION}\`"
+            echo "- URL: https://www.npmjs.com/package/@misarreach/mcp"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  probe-smithery:
+    name: Probe Smithery endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call tools/list
+        run: |
+          RESPONSE=$(curl -s -X POST https://mail.misar.io/api/mcp \
+            -H "Content-Type: application/json" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}')
+          TOOL_COUNT=$(echo "$RESPONSE" | jq -r '.result.tools | length' 2>/dev/null || echo "unknown")
+          {
+            echo "### Smithery / MCP Endpoint"
+            echo "- Endpoint: \`https://mail.misar.io/api/mcp\`"
+            echo "- Tools available: \`${TOOL_COUNT}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  submit-awesome-mcp-servers:
+    name: Submit to punkpeye/awesome-mcp-servers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for existing PR
+        id: check-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COUNT=$(gh pr list \
+            --repo punkpeye/awesome-mcp-servers \
+            --search "MisarReach" \
+            --state all \
+            --json number \
+            --jq 'length')
+          echo "existing=${COUNT}" >> "$GITHUB_OUTPUT"
+          echo "Existing PRs matching 'MisarReach': ${COUNT}"
+
+      - name: Create PR if not exists
+        if: steps.check-pr.outputs.existing == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --repo punkpeye/awesome-mcp-servers \
+            --title "Add MisarReach MCP Server" \
+            --body "## Add MisarReach MCP Server
+
+          **Name**: MisarReach MCP Server
+          **Repository**: https://github.com/mrgulshanyadav/misarreach-mcp
+          **npm**: https://www.npmjs.com/package/@misarreach/mcp
+          **Category**: Email / Marketing
+
+          ### Description
+          MisarReach MCP Server exposes 32 tools for email marketing via the Model Context Protocol — campaigns, contacts, templates, automations, analytics, deliverability, and multi-channel messaging (email + WhatsApp).
+
+          ### Installation
+          \`\`\`json
+          {
+            \"mcpServers\": {
+              \"misarreach\": {
+                \"command\": \"npx\",
+                \"args\": [\"@misarreach/mcp\"],
+                \"env\": { \"MISARREACH_API_KEY\": \"msk_your_key\" }
+              }
+            }
+          }
+          \`\`\`
+          " || echo "PR creation failed (may need fork access)"
+
+      - name: Report status
+        run: |
+          STATUS="PR creation attempted"
+          if [ "${{ steps.check-pr.outputs.existing }}" != "0" ]; then
+            STATUS="Already submitted"
+          fi
+          {
+            echo "### awesome-mcp-servers (punkpeye)"
+            echo "- Status: ${STATUS}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  submit-mcpserver-cc:
+    name: Submit to Horatio-Li/awesome-mcp-servers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for existing issue
+        id: check-issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COUNT=$(gh issue list \
+            --repo Horatio-Li/awesome-mcp-servers \
+            --search "MisarReach" \
+            --state all \
+            --json number \
+            --jq 'length' 2>/dev/null || echo "0")
+          echo "existing=${COUNT}" >> "$GITHUB_OUTPUT"
+          echo "Existing issues matching 'MisarReach': ${COUNT}"
+
+      - name: Create issue if not exists
+        if: steps.check-issue.outputs.existing == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo Horatio-Li/awesome-mcp-servers \
+            --title "Add MisarReach MCP Server" \
+            --body "## MisarReach MCP Server
+
+          - **Repository**: https://github.com/mrgulshanyadav/misarreach-mcp
+          - **npm**: https://www.npmjs.com/package/@misarreach/mcp
+          - **Category**: Email / Marketing
+          - **Tools**: 32 tools — campaigns, contacts, templates, automations, analytics, deliverability, WhatsApp
+          - **License**: MIT
+          " || echo "Issue creation failed"
+
+      - name: Report status
+        run: |
+          STATUS="Issue creation attempted"
+          if [ "${{ steps.check-issue.outputs.existing }}" != "0" ]; then
+            STATUS="Already submitted"
+          fi
+          {
+            echo "### awesome-mcp-servers (Horatio-Li)"
+            echo "- Status: ${STATUS}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  submit-mcpmarket:
+    name: Submit to mcpmarket.com
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: POST to mcpmarket.com
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST https://mcpmarket.com/api/submit-url \
+            -H "Content-Type: application/json" \
+            -d '{"url":"https://github.com/mrgulshanyadav/misarreach-mcp"}')
+          echo "HTTP status: ${HTTP_STATUS}"
+          {
+            echo "### mcpmarket.com"
+            echo "- Submit HTTP status: \`${HTTP_STATUS}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  submit-mcpserverhub:
+    name: Submit to mcpserverhub.net
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: POST to mcpserverhub.net
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST https://mcpserverhub.net/api/submit \
+            -H "Content-Type: application/json" \
+            -d '{"name":"MisarReach MCP Server","url":"https://github.com/mrgulshanyadav/misarreach-mcp","category":"sales","config":{"command":"npx","args":["@misarreach/mcp"],"env":{"MISARREACH_API_KEY":"<your_key>"}}}')
+          echo "HTTP status: ${HTTP_STATUS}"
+          {
+            echo "### mcpserverhub.net"
+            echo "- Submit HTTP status: \`${HTTP_STATUS}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  verify-mcp-so:
+    name: Verify mcp.so listing
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check mcp.so
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            https://mcp.so/server/misarreach)
+          echo "HTTP status: ${HTTP_STATUS}"
+          {
+            echo "### mcp.so"
+            if [ "${HTTP_STATUS}" = "200" ]; then
+              echo "- Status: Listed (HTTP 200)"
+            else
+              echo "- Status: Not found (HTTP ${HTTP_STATUS})"
+              echo "- Manual submit: https://mcp.so/submit"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  verify-mcpserver-dev:
+    name: Verify mcpserver.dev listing
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check mcpserver.dev
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mcpserver.dev)
+          echo "HTTP status: ${HTTP_STATUS}"
+          {
+            echo "### mcpserver.dev"
+            echo "- Site reachable: HTTP \`${HTTP_STATUS}\`"
+            echo "- Manual check: https://mcpserver.dev"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  verify-mcpservers-org:
+    name: Verify mcpservers.org listing
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check mcpservers.org
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mcpservers.org)
+          echo "HTTP status: ${HTTP_STATUS}"
+          {
+            echo "### mcpservers.org"
+            echo "- Site reachable: HTTP \`${HTTP_STATUS}\`"
+            echo "- Manual check: https://mcpservers.org"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  status-report:
+    name: Status Report
+    runs-on: ubuntu-latest
+    needs:
+      - verify-npm
+      - probe-smithery
+      - submit-awesome-mcp-servers
+      - submit-mcpserver-cc
+      - submit-mcpmarket
+      - submit-mcpserverhub
+      - verify-mcp-so
+      - verify-mcpserver-dev
+      - verify-mcpservers-org
+    if: always()
+    steps:
+      - name: Write summary table
+        run: |
+          {
+            echo "## MisarReach MCP — Directory Submission Report"
+            echo ""
+            echo "| Platform | Job | Result |"
+            echo "|----------|-----|--------|"
+            echo "| npm Registry | verify-npm | ${{ needs.verify-npm.result }} |"
+            echo "| Smithery / MCP endpoint | probe-smithery | ${{ needs.probe-smithery.result }} |"
+            echo "| awesome-mcp-servers (punkpeye) | submit-awesome-mcp-servers | ${{ needs.submit-awesome-mcp-servers.result }} |"
+            echo "| awesome-mcp-servers (Horatio-Li) | submit-mcpserver-cc | ${{ needs.submit-mcpserver-cc.result }} |"
+            echo "| mcpmarket.com | submit-mcpmarket | ${{ needs.submit-mcpmarket.result }} |"
+            echo "| mcpserverhub.net | submit-mcpserverhub | ${{ needs.submit-mcpserverhub.result }} |"
+            echo "| mcp.so | verify-mcp-so | ${{ needs.verify-mcp-so.result }} |"
+            echo "| mcpserver.dev | verify-mcpserver-dev | ${{ needs.verify-mcpserver-dev.result }} |"
+            echo "| mcpservers.org | verify-mcpservers-org | ${{ needs.verify-mcpservers-org.result }} |"
+            echo ""
+            echo "_Run at: $(date -u)_"
+          } >> "$GITHUB_STEP_SUMMARY"

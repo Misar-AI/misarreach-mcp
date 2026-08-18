@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract changelog entry
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [ -f CHANGELOG.md ]; then
+            # Extract section between this version header and the next
+            BODY=$(awk \
+              "/^## \\[?${VERSION}\\]?|^## v?${VERSION}[[:space:]]/"',/^## [0-9v\[]/{if (found) exit; found=1; next} found' \
+              CHANGELOG.md | head -150)
+          fi
+          if [ -z "${BODY}" ]; then
+            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+            if [ -n "${PREV_TAG}" ]; then
+              BODY=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (%h)" --no-merges)
+            else
+              BODY=$(git log --pretty=format:"- %s (%h)" --no-merges -20)
+            fi
+            BODY="## Changes"$'\n\n'"${BODY}"
+          fi
+          printf '%s' "${BODY}" > /tmp/release-body.md
+          echo "--- Release notes ---"
+          cat /tmp/release-body.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          gh release create "${TAG}" \
+            --title "MisarReach MCP Server ${TAG}" \
+            --notes-file /tmp/release-body.md \
+            --verify-tag \
+            server.json \
+            smithery.yaml
+
+      - name: Trigger submit-directories workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run submit-directories.yml --ref main \
+            && echo "submit-directories workflow dispatched" \
+            || echo "Warning: could not dispatch submit-directories workflow"
