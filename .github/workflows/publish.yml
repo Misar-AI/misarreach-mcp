@@ -33,9 +33,20 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          # A re-run must not fail the whole pipeline. npm refuses to replace an
+          # existing version, and this job gates the registry publish, so a
+          # harmless retag was taking the downstream jobs down with it.
+          if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
+            echo "::notice::${NAME}@${VERSION} is already on npm — nothing to publish."
+          else
+            npm publish --access public
+          fi
 
   publish-smithery:
     name: Trigger Smithery re-scan
