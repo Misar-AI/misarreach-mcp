@@ -1,0 +1,336 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "MisarReach",
+    "subtitle": "Find leads and run outreach",
+    "description": "MisarReach lets users find and enrich B2B leads, verify email addresses, qualify and score prospects, run multi-channel outreach sequences, and manage the sales pipeline — from ChatGPT.",
+    "category": "BUSINESS"
+  },
+  "tools": {
+    "list_leads": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "search_leads": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "get_search_job_status": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "submit_lead_feedback": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "discover_companies": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "enrich_lead": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "verify_emails": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "score_leads": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "list_lead_lists": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "create_lead_list": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "sync_lead_list": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "preview_message": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "send_to_campaign": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "list_deals": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "create_deal": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "update_deal": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "get_pipeline": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "move_deal_stage": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "start_autopilot": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "list_autopilot_runs": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "get_autopilot_status": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "get_channels_status": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "update_channel": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "get_sales_agent_config": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "update_sales_agent_config": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "get_sales_agent_actions": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves or computes data to return to the user; it does not change MisarReach records.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    },
+    "process_sales_agent": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Can create, update, send, schedule or otherwise change MisarReach state.",
+        "open_world_justification": "Reaches the hosted MisarReach API over the network, so results depend on live account state outside this conversation.",
+        "destructive_justification": "Does not delete, revoke or irreversibly overwrite anything; any change it makes can be undone by a subsequent call."
+      }
+    }
+  }
+}
