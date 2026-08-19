@@ -3,7 +3,7 @@
 > Find leads, enrich and score them, run multi-channel outreach, and manage the sales pipeline — from any AI assistant.
 
 [![npm](https://img.shields.io/npm/v/@misarreach/mcp)](https://www.npmjs.com/package/@misarreach/mcp)
-[![smithery](https://img.shields.io/badge/smithery-misar%2Fmisarreach--mcp-blue)](https://smithery.ai/server/misar/misarreach-mcp)
+[![smithery](https://img.shields.io/badge/smithery-misar%2Fmisarreach--mcp-blue)](https://smithery.ai/servers/misar/misarreach-mcp)
 [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 **27 tools · 5 prompts · 4 resources · 4 agent skills**
@@ -160,7 +160,8 @@ Every action does.
 - Website — https://www.misarreach.com
 - App — https://reach.misar.io
 - Documentation — https://docs.misar.io/reach/mcp
-- Smithery — https://smithery.ai/server/misar/misarreach-mcp
+- Smithery — https://smithery.ai/servers/misar/misarreach-mcp
+- Smithery skills — [build-and-qualify-a-lead-list](https://smithery.ai/skills/misar/build-and-qualify-a-lead-list), [run-an-outreach-sequence](https://smithery.ai/skills/misar/run-an-outreach-sequence), [review-the-sales-pipeline](https://smithery.ai/skills/misar/review-the-sales-pipeline), [audit-autopilot-and-agent](https://smithery.ai/skills/misar/audit-autopilot-and-agent)
 - npm — https://www.npmjs.com/package/@misarreach/mcp
 - Source — https://github.com/Misar-AI/misarreach-mcp
 

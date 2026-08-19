@@ -69,7 +69,7 @@ jobs:
           # status-only check reports every server as listed. Glama 404s
           # honestly. Each entry carries a string that only a real listing has.
           for entry in \
-            "Smithery|https://smithery.ai/server/@Misar-AI/${SLUG}|${SLUG}" \
+            "Smithery|https://smithery.ai/servers/@Misar-AI/${SLUG}|${SLUG}" \
             "Glama|https://glama.ai/mcp/servers/Misar-AI/${SLUG}|${SLUG}" \
             "mcp.so|https://mcp.so/server/${SLUG}|${SLUG}"
           do
