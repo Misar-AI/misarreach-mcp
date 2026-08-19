@@ -4,6 +4,7 @@ import { listResources, readResource } from "./resources.js";
 import { httpContext, runWithContext } from "./lib/context.js";
 import { authGuidance } from "./lib/auth-guidance.js";
 import { formatError } from "./lib/errors.js";
+import { SERVER_NAME, SERVER_VERSION } from "./version.js";
 
 /**
  * Streamable HTTP (JSON-RPC 2.0) transport for the MisarReach MCP server.
@@ -66,8 +67,9 @@ export function createReachHttpHandler(options: ReachHttpOptions) {
     authenticate,
     rateLimit,
     baseUrl,
-    serverName = "misarreach",
-    serverVersion = "2.0.0",
+    serverName = SERVER_NAME,
+    // Was a hardcoded "2.0.0", independent of SERVER_VERSION — see version.ts.
+    serverVersion = SERVER_VERSION,
     onError,
   } = options;
 
