@@ -3,7 +3,7 @@
   "name": "io.github.Misar-AI/misarreach-mcp",
   "title": "MisarReach MCP Server",
   "description": "Find and enrich leads, run multi-channel outreach, and manage the sales pipeline.",
-  "version": "5.0.4",
+  "version": "5.1.0",
   "repository": {
     "url": "https://github.com/Misar-AI/misarreach-mcp",
     "source": "github"
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "@misarreach/mcp",
-      "version": "5.0.4",
+      "version": "5.1.0",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
@@ -21,7 +21,7 @@
       "environmentVariables": [
         {
           "name": "MISARREACH_API_KEY",
-          "description": "Your MisarReach API key (mrk_\u2026). Create one at https://reach.misar.io/settings/api-keys, or omit it and run the \"login\" tool to authenticate via browser.",
+          "description": "Your MisarReach API key (mrk_…). Create one at https://reach.misar.io/settings/api-keys, or omit it and run the \"login\" tool to authenticate via browser.",
           "isRequired": false,
           "format": "string",
           "isSecret": true
@@ -43,7 +43,7 @@
       "headers": [
         {
           "name": "Authorization",
-          "description": "MisarReach API key. Format: Bearer mrk_\u2026 \u2014 create one at https://reach.misar.io/settings/api-keys",
+          "description": "MisarReach API key. Format: Bearer mrk_… — create one at https://reach.misar.io/settings/api-keys",
           "isRequired": true,
           "isSecret": true
         }

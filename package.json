@@ -1,7 +1,7 @@
 {
   "name": "@misarreach/mcp",
-  "version": "5.0.4",
-  "description": "MisarReach MCP server \u2014 find and enrich leads, verify emails, run multi-channel outreach, and manage the sales pipeline from Claude, Cursor, VS Code, Windsurf, and any MCP client.",
+  "version": "5.1.0",
+  "description": "MisarReach MCP server — find and enrich leads, verify emails, run multi-channel outreach, and manage the sales pipeline from Claude, Cursor, VS Code, Windsurf, and any MCP client.",
   "homepage": "https://www.misarreach.com",
   "repository": {
     "type": "git",

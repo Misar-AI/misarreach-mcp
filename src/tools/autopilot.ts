@@ -5,7 +5,18 @@ export const autopilotTools: Tool[] = [
   {
     name: "start_autopilot",
     description:
-      "Start an AI autopilot run for outreach automation. Provide a goal and the agent runs fire-and-forget. Returns runId — poll get_autopilot_status for progress. Consumes autopilot credits.",
+      "Start an autonomous outreach run: give the agent a goal and it finds, contacts and " +
+      "follows up with leads on its own. " +
+      "\n\n" +
+      "This is the most consequential tool on this server. It is FIRE-AND-FORGET and it " +
+      "SENDS REAL MESSAGES TO REAL PEOPLE without returning for approval, so only start a " +
+      "run when the user has explicitly asked for one and understands the goal as written — " +
+      "the goal text is the entire brief. It returns a runId immediately; watch progress " +
+      "with get_autopilot_status. " +
+      "\n\n" +
+      "CONSUMES AUTOPILOT CREDITS, plus search, enrichment and AI credits as it works. " +
+      "Requires an API key. Each call starts a SEPARATE run — calling twice runs two " +
+      "campaigns concurrently against the same goal. ",
     inputSchema: {
       type: "object",
       properties: {
@@ -20,10 +31,24 @@ export const autopilotTools: Tool[] = [
       },
       required: ["goal"],
     },
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
   },
   {
     name: "list_autopilot_runs",
-    description: "List past autopilot runs with their status and summary results.",
+    description:
+      "List past and running autopilot runs with their status and result summaries. " +
+      "\n\n" +
+      "Use it to review what has already been run — and to check for a run already in " +
+      "flight before start_autopilot launches a second one against the same goal. For " +
+      "detail on one run, use get_autopilot_status. " +
+      "\n\n" +
+      "Reads only, costs no credits, and starts nothing. Requires an API key. Returns runs " +
+      "newest first with paging. ",
     inputSchema: {
       type: "object",
       properties: {
@@ -31,16 +56,36 @@ export const autopilotTools: Tool[] = [
         offset: { type: "number", description: "Pagination offset" },
       },
     },
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
   },
   {
     name: "get_autopilot_status",
-    description: "Get the current status and progress of a specific autopilot run.",
+    description:
+      "Get the current progress and results of one autopilot run. " +
+      "\n\n" +
+      "This is how you follow a run started by start_autopilot: call it with the runId, " +
+      "leaving time between polls. Reading status does not pause, stop, or alter the run in " +
+      "any way — it keeps going regardless, and there is no tool here to stop it. " +
+      "\n\n" +
+      "Reads only and costs no credits, however often you call it. Requires an API key. A " +
+      "run still in progress is a normal answer, not an error. ",
     inputSchema: {
       type: "object",
       properties: {
         runId: { type: "string", description: "Autopilot run UUID" },
       },
       required: ["runId"],
+    },
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
     },
   },
 ];

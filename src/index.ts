@@ -19,7 +19,9 @@ import { formatError } from "./lib/errors.js";
 const AUTH_TOOL_NAMES = new Set(authTools.map((t) => t.name));
 
 export const SERVER_NAME = "misarreach";
-export const SERVER_VERSION = "2.0.0";
+// Keep in step with package.json — this is what `initialize` reports as
+// serverInfo.version, and directories display it.
+export const SERVER_VERSION = "5.1.0";
 
 function buildServer(): Server {
   const server = new Server(
