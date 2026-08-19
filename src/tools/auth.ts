@@ -194,6 +194,7 @@ async function runLogin(args: Record<string, unknown>): Promise<string> {
   });
 }
 
+/** Authentication status and account tools. */
 export const authTools: Tool[] = [
   {
     name: "login",
@@ -231,6 +232,7 @@ export const authTools: Tool[] = [
   },
 ];
 
+/** Dispatch one authentication tool call. */
 export async function handleAuthTool(name: string, args: Record<string, unknown>): Promise<string> {
   switch (name) {
     case "login":

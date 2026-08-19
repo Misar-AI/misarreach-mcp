@@ -1,6 +1,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { apiFetch } from "../lib/api-client.js";
 
+/** Lead discovery, enrichment, verification and scoring. */
 export const leadTools: Tool[] = [
   {
     name: "list_leads",
@@ -366,6 +367,7 @@ export const leadTools: Tool[] = [
   },
 ];
 
+/** Dispatch one lead tool call. */
 export async function handleLeadTool(
   name: string,
   args: Record<string, unknown>

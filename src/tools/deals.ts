@@ -1,6 +1,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { apiFetch } from "../lib/api-client.js";
 
+/** Deals and the sales pipeline board. */
 export const dealTools: Tool[] = [
   {
     name: "list_deals",
@@ -161,6 +162,7 @@ export const dealTools: Tool[] = [
   },
 ];
 
+/** Dispatch one deal tool call. */
 export async function handleDealTool(
   name: string,
   args: Record<string, unknown>

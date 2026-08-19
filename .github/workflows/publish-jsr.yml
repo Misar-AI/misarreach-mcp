@@ -1,0 +1,52 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# @misarreach/mcp → jsr.io
+# ─────────────────────────────────────────────────────────────────────────────
+# Publishes from GitHub Actions with OIDC rather than a stored token. That is
+# not just about avoiding a secret: JSR grants the "provenance" score item only
+# to OIDC publishes, so a token-based publish is capped one point below full
+# marks no matter how good the package is.
+#
+# Deliberately no --allow-slow-types: the flag silences the check while JSR
+# still scores it 0/5, so a regression should fail here rather than quietly cost
+# five points.
+# ─────────────────────────────────────────────────────────────────────────────
+name: Publish to JSR
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Required for OIDC — this is what earns provenance.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # jsr publish type-checks the real source, so the SDK it imports must be
+      # present. It passed locally only because node_modules already existed.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Align jsr.json with the released version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          node -e '
+            const fs = require("fs");
+            const j = JSON.parse(fs.readFileSync("jsr.json", "utf8"));
+            j.version = process.argv[1];
+            fs.writeFileSync("jsr.json", JSON.stringify(j, null, 2) + "\n");
+          ' "$VERSION"
+          echo "jsr.json set to ${VERSION}"
+
+      - name: Publish
+        run: npx jsr publish --allow-dirty

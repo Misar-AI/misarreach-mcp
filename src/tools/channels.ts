@@ -1,6 +1,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { apiFetch } from "../lib/api-client.js";
 
+/** Outreach channel status and enablement (WhatsApp, SMS, push). */
 export const channelTools: Tool[] = [
   {
     name: "get_channels_status",
@@ -59,6 +60,7 @@ export const channelTools: Tool[] = [
   },
 ];
 
+/** Dispatch one channel tool call. */
 export async function handleChannelTool(
   name: string,
   args: Record<string, unknown>

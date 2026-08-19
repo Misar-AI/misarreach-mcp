@@ -1,6 +1,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { apiFetch } from "../lib/api-client.js";
 
+/** AI sales agent configuration and its actions. */
 export const salesAgentTools: Tool[] = [
   {
     name: "get_sales_agent_config",
@@ -127,6 +128,7 @@ export const salesAgentTools: Tool[] = [
   },
 ];
 
+/** Dispatch one sales-agent tool call. */
 export async function handleSalesAgentTool(
   name: string,
   args: Record<string, unknown>

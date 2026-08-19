@@ -1,5 +1,6 @@
 import { extractUpgradeOffer, renderUpgradeOffer, type UpgradeOffer } from "./upgrade.js";
 
+/** Render any thrown value as a message safe to return to the model. */
 export function formatError(error: unknown): string {
   if (error instanceof Error) return error.message;
   if (typeof error === "string") return error;

@@ -10,6 +10,7 @@
  * do not each have to thread usage through their return path.
  */
 
+/** Quota warning appended to a response when an allowance is nearly spent. */
 export interface UsageWarning {
   feature: string;
   used: number;

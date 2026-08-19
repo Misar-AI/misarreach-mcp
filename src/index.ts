@@ -1,4 +1,21 @@
 #!/usr/bin/env node
+/**
+ * MisarReach MCP server — stdio entrypoint.
+ *
+ * Running this module starts the server over stdio, which is how Claude
+ * Desktop, Claude Code, Cursor and other local MCP clients launch it. For the
+ * hosted HTTP transport see `./http`; for the tool catalogue see `./registry`.
+ *
+ * @example
+ * ```jsonc
+ * // claude_desktop_config.json
+ * { "mcpServers": { "misarreach": {
+ *     "command": "npx", "args": ["-y", "@misarreach/mcp"],
+ *     "env": { "MISARREACH_API_KEY": "mrk_..." } } } }
+ * ```
+ *
+ * @module
+ */
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {

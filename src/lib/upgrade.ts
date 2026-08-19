@@ -10,6 +10,7 @@
 
 // ── Payload contract (mirrors MisarBlog src/lib/plan/upgrade-offer.ts) ───────
 
+/** One plan a user could move to, with its price and limits. */
 export interface UpgradePlanOption {
   slug: string;
   name: string;
@@ -22,6 +23,7 @@ export interface UpgradePlanOption {
   url: string;
 }
 
+/** A free-trial offer the account is eligible for. */
 export interface TrialOffer {
   available: boolean;
   plan_slug: string;
@@ -32,6 +34,7 @@ export interface TrialOffer {
   label: string;
 }
 
+/** A related Misar product offered alongside an upgrade. */
 export interface CrossSellOffer {
   product: string;
   product_name: string;
@@ -39,6 +42,7 @@ export interface CrossSellOffer {
   url: string;
 }
 
+/** Everything the `upgrade` tool needs to describe the account's options. */
 export interface UpgradeOffer {
   product_name: string;
   reason: "quota_exhausted" | "feature_locked" | "credits_exhausted";

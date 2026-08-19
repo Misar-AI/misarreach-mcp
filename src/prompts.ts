@@ -9,12 +9,14 @@
  * Every tool named below is a real tool in `src/tools/`.
  */
 
+/** One argument a prompt accepts. */
 export interface PromptArgument {
   name: string;
   description: string;
   required: boolean;
 }
 
+/** A prompt template: its metadata plus the builder that renders it. */
 export interface PromptDefinition {
   name: string;
   description: string;
@@ -22,6 +24,7 @@ export interface PromptDefinition {
   build: (args: Record<string, string>) => string;
 }
 
+/** Every prompt this server exposes. */
 export const PROMPTS: PromptDefinition[] = [
   {
     name: "build_lead_list",
@@ -95,11 +98,36 @@ export const PROMPTS: PromptDefinition[] = [
 
 const BY_NAME = new Map(PROMPTS.map((p) => [p.name, p]));
 
-export function listPrompts() {
+/** One prompt as advertised by `prompts/list`. */
+export interface PromptSummary {
+  /** Prompt id to pass to {@link getPrompt}. */
+  name: string;
+  /** What the prompt is for. */
+  description: string;
+  /** Arguments it accepts, and which are required. */
+  arguments: Array<{ name: string; description: string; required?: boolean }>;
+}
+
+/** A rendered prompt, as returned by `prompts/get`. */
+export interface RenderedPrompt {
+  /** What the prompt is for. */
+  description: string;
+  /** The messages to seed the conversation with. */
+  messages: Array<{ role: "user"; content: { type: "text"; text: string } }>;
+  /**
+   * The SDK's result union is an open record, so this has to stay indexable to
+   * remain assignable to it — naming the type is what JSR needs, not sealing it.
+   */
+  [key: string]: unknown;
+}
+
+/** Every prompt this server exposes, as `prompts/list` returns them. */
+export function listPrompts(): PromptSummary[] {
   return PROMPTS.map(({ name, description, arguments: args }) => ({ name, description, arguments: args }));
 }
 
-export function getPrompt(name: string, args: Record<string, string> = {}) {
+/** Render one prompt by name, or null when no such prompt exists. */
+export function getPrompt(name: string, args: Record<string, string> = {}): RenderedPrompt | null {
   const prompt = BY_NAME.get(name);
   if (!prompt) return null;
   return {

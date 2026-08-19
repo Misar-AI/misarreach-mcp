@@ -1,6 +1,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { apiFetch } from "../lib/api-client.js";
 
+/** Autonomous outreach runs: start, list and poll. */
 export const autopilotTools: Tool[] = [
   {
     name: "start_autopilot",
@@ -90,6 +91,7 @@ export const autopilotTools: Tool[] = [
   },
 ];
 
+/** Dispatch one autopilot tool call. */
 export async function handleAutopilotTool(
   name: string,
   args: Record<string, unknown>

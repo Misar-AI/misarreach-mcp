@@ -1,3 +1,11 @@
+/**
+ * The MisarReach tool catalogue.
+ *
+ * Every tool the server exposes is registered here once and dispatched by name,
+ * so both transports advertise and run exactly the same set.
+ *
+ * @module
+ */
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 import { leadTools, handleLeadTool } from "./tools/leads.js";
@@ -38,6 +46,7 @@ for (const [tools, handler] of HANDLERS) {
   for (const tool of tools) BY_NAME.set(tool.name, handler);
 }
 
+/** Thrown when `tools/call` names a tool that does not exist. */
 export class UnknownToolError extends Error {
   constructor(name: string) {
     super(`Unknown tool: ${name}`);
@@ -45,6 +54,7 @@ export class UnknownToolError extends Error {
   }
 }
 
+/** Look up a tool by name, following legacy aliases. */
 export function resolveTool(name: string): Tool | undefined {
   return ALL_TOOLS.find((t) => t.name === name);
 }

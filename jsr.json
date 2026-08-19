@@ -1,0 +1,19 @@
+{
+  "name": "@misarreach/mcp",
+  "version": "5.1.2",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./registry": "./src/registry.ts",
+    "./http": "./src/http.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "README.md",
+      "LICENSE",
+      "jsr.json",
+      "server.json"
+    ]
+  }
+}
