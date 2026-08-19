@@ -1,0 +1,67 @@
+{
+  "name": "MisarReach MCP Server",
+  "description": "Find and enrich B2B leads across 23 sources with live streaming progress, score and qualify them, run multi-channel outreach over email, SMS, WhatsApp and social DMs, and manage the CRM pipeline — from any AI assistant.",
+  "supportedInterfaces": [
+    {
+      "url": "https://api.misar.io/reach/mcp",
+      "protocolBinding": "mcp",
+      "protocolVersion": "2025-06-18"
+    }
+  ],
+  "provider": {
+    "organization": "Misar AI",
+    "url": "https://www.misarreach.com"
+  },
+  "version": "5.1.1",
+  "documentationUrl": "https://github.com/Misar-AI/misarreach-mcp",
+  "iconUrl": "https://raw.githubusercontent.com/Misar-AI/misarreach-mcp/main/assets/icon-400.png",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extendedAgentCard": false
+  },
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "misarreach.outbound_sales",
+      "name": "Lead generation and outbound sales",
+      "tags": [
+        "lead-generation",
+        "outreach",
+        "sales",
+        "crm",
+        "prospecting",
+        "mcp"
+      ],
+      "examples": [
+        "Build a list of SaaS founders in Berlin and verify their email addresses.",
+        "Start an outreach sequence for the leads we qualified yesterday.",
+        "Show me the deals sitting in the proposal stage."
+      ],
+      "description": "Find and enrich B2B leads across 23 sources with live streaming progress, score and qualify them, run multi-channel outreach over email, SMS, WhatsApp and social DMs, and manage the CRM pipeline — from any AI assistant. Exposed as 27 MCP tools; every tool carries behavioural annotations describing whether it reads, writes, or is destructive."
+    }
+  ],
+  "securitySchemes": {
+    "apiKey": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "MisarReach API key (prefix mrk_), sent as a bearer token or as ?apiKey=. Also readable from MISARREACH_API_KEY on the stdio server. Discovery methods answer without it; every tool call requires it."
+    }
+  },
+  "securityRequirements": [
+    {
+      "schemes": {
+        "apiKey": {
+          "values": []
+        }
+      }
+    }
+  ]
+}
