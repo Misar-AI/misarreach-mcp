@@ -1,44 +1,33 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { apiFetch } from "../lib/api-client.js";
 
-/** AI sales agent configuration and its actions. */
 export const salesAgentTools: Tool[] = [
   {
     name: "get_sales_agent_config",
-    description:
-      "Fetch the AI sales agent's current settings: whether it is enabled, its booking " +
-      "link, offer price, reply limits and confidence threshold. " +
-      "\n\n" +
-      "Read this before update_sales_agent_config so you change one field without " +
-      "clobbering the rest, and to check whether the agent is enabled at all before " +
-      "expecting it to act. " +
-      "\n\n" +
-      "Reads only, takes no parameters, changes nothing. Requires an API key. Returns the " +
-      "configuration for the authenticated account. ",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
+    description: "Fetch the current user's AI sales agent configuration.",
     annotations: {
+      title: "Get sales agent config",
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
-      openWorldHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: "object",
+      properties: {},
     },
   },
   {
     name: "update_sales_agent_config",
     description:
-      "Change the AI sales agent's settings — enable or disable it, set the booking link, " +
-      "offer price, reply limits and confidence threshold. " +
-      "\n\n" +
-      "These settings govern an agent that replies to real prospects, so treat them as " +
-      "live: ENABLING it lets it start responding on its own, the confidence threshold " +
-      "decides how sure it must be before acting, and reply limits cap how much it can " +
-      "send. Read the current config first — only the fields you pass change, but a wrong " +
-      "value takes effect immediately. " +
-      "\n\n" +
-      "Safe to repeat. Requires an API key. ",
+      "Update the AI sales agent configuration (enable/disable, cal link, offer price, reply limits, confidence threshold).",
+    annotations: {
+      title: "Update sales agent config",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     inputSchema: {
       type: "object",
       properties: {
@@ -65,50 +54,37 @@ export const salesAgentTools: Tool[] = [
         },
       },
     },
-    annotations: {
-      readOnlyHint: false,
-      destructiveHint: false,
-      idempotentHint: true,
-      openWorldHint: true,
-    },
   },
   {
     name: "get_sales_agent_actions",
     description:
-      "Get what the AI sales agent has done today, with summary stats — actions taken, " +
-      "deals created, replies sent. " +
-      "\n\n" +
-      "This is the audit trail: use it to see what the agent did on the account's behalf, " +
-      "and to sanity-check its behaviour after enabling it. Covers TODAY only, so it is not " +
-      "the tool for historical reporting. " +
-      "\n\n" +
-      "Reads only and changes nothing; it does not approve or undo any action. Requires an " +
-      "API key. No actions today is a normal answer, not an error. ",
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
+      "Fetch today's AI sales agent actions and summary stats (total actions, deals closed, flagged for human review).",
     annotations: {
+      title: "Get sales agent activity",
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
-      openWorldHint: true,
+      openWorldHint: false,
+    },
+    inputSchema: {
+      type: "object",
+      properties: {},
     },
   },
   {
     name: "process_sales_agent",
     description:
-      "Run the sales-agent pipeline over one conversation: decide the next action and carry " +
-      "it out. " +
-      "\n\n" +
-      "This ACTS on a real conversation — depending on what it decides, it can reply to the " +
-      "prospect, create a deal, or book a meeting. It is not a dry run and there is no " +
-      "preview, so call it only when the user wants the agent to take its turn on that " +
-      "specific conversation. For what it has already done, use get_sales_agent_actions. " +
-      "\n\n" +
-      "CONSUMES AI CREDITS. Not idempotent: calling twice processes the conversation twice " +
-      "and can send two messages. Requires an API key, and the agent's configured " +
-      "confidence threshold still governs whether it acts. ",
+      "Run the AI sales agent pipeline on a conversation — decides the next action and optionally generates a reply. Logs the action to the agent activity feed.",
+    annotations: {
+      title: "Run sales agent on conversation",
+      readOnlyHint: false,
+      // Can autonomously reply to a real prospect or book a meeting; a sent
+      // reply cannot be unsent, so this is destructive as well as non-open,
+      // non-idempotent (calling twice can send two messages).
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     inputSchema: {
       type: "object",
       properties: {
@@ -119,16 +95,9 @@ export const salesAgentTools: Tool[] = [
       },
       required: ["conversationId"],
     },
-    annotations: {
-      readOnlyHint: false,
-      destructiveHint: false,
-      idempotentHint: false,
-      openWorldHint: true,
-    },
   },
 ];
 
-/** Dispatch one sales-agent tool call. */
 export async function handleSalesAgentTool(
   name: string,
   args: Record<string, unknown>

@@ -194,12 +194,18 @@ async function runLogin(args: Record<string, unknown>): Promise<string> {
   });
 }
 
-/** Authentication status and account tools. */
 export const authTools: Tool[] = [
   {
     name: "login",
     description:
       "Authenticate with your MisarReach account via browser — no API key copy-paste needed. Opens the MisarReach authorization page where you review the request and click 'Authorize'. The API key is delivered straight back to this client and saved to ~/.misarreach/config.json.",
+    annotations: {
+      title: "Log in via browser",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     inputSchema: {
       type: "object",
       properties: {
@@ -222,17 +228,30 @@ export const authTools: Tool[] = [
     name: "logout",
     description:
       "Disconnect this client by deleting the stored MisarReach API key from ~/.misarreach/config.json. The key stays valid on the server — revoke it in Settings → API keys to retire it fully.",
+    annotations: {
+      title: "Log out",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     inputSchema: { type: "object", properties: {} },
   },
   {
     name: "auth_status",
     description:
       "Check whether this client is authenticated with MisarReach and which API base URL it is using. Returns actionable next steps when it is not.",
+    annotations: {
+      title: "Auth status",
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
     inputSchema: { type: "object", properties: {} },
   },
 ];
 
-/** Dispatch one authentication tool call. */
 export async function handleAuthTool(name: string, args: Record<string, unknown>): Promise<string> {
   switch (name) {
     case "login":

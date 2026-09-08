@@ -1,19 +1,9 @@
-/**
- * Streamable HTTP transport for the MisarReach MCP server.
- *
- * Exposes {@link createReachHttpHandler}, which turns the shared catalogue into
- * a Web-standard `Request` → `Response` handler. Authentication and rate
- * limiting are injected by the host, so both transports stay identical.
- *
- * @module
- */
 import { dispatch, listTools, resolveTool, UnknownToolError } from "./registry.js";
 import { listPrompts, getPrompt } from "./prompts.js";
 import { listResources, readResource } from "./resources.js";
 import { httpContext, runWithContext } from "./lib/context.js";
 import { authGuidance } from "./lib/auth-guidance.js";
 import { formatError } from "./lib/errors.js";
-import { SERVER_NAME, SERVER_VERSION } from "./version.js";
 
 /**
  * Streamable HTTP (JSON-RPC 2.0) transport for the MisarReach MCP server.
@@ -29,14 +19,12 @@ import { SERVER_NAME, SERVER_VERSION } from "./version.js";
  * than in module state.
  */
 
-/** An authenticated caller, as resolved by the host's `authenticate` hook. */
 export interface ReachCaller {
   userId: string;
   /** The raw API key forwarded to the REST API on this caller's behalf. */
   apiKey: string;
 }
 
-/** Host-supplied hooks and configuration for {@link createReachHttpHandler}. */
 export interface ReachHttpOptions {
   /** Resolve an Authorization header to a caller, or null when invalid. */
   authenticate: (authHeader: string | null) => Promise<ReachCaller | null>;
@@ -73,23 +61,13 @@ function toolResult(data: unknown, isError = false) {
   };
 }
 
-/** Handles one HTTP request against the MCP endpoint. */
-export type ReachHttpHandler = (request: Request) => Promise<Response>;
-
-/**
- * Build a Web-standard request handler for the MCP endpoint.
- *
- * @param options Authentication, rate limiting and the API base URL.
- * @returns A handler taking a `Request` and resolving to a `Response`.
- */
-export function createReachHttpHandler(options: ReachHttpOptions): ReachHttpHandler {
+export function createReachHttpHandler(options: ReachHttpOptions) {
   const {
     authenticate,
     rateLimit,
     baseUrl,
-    serverName = SERVER_NAME,
-    // Was a hardcoded "2.0.0", independent of SERVER_VERSION — see version.ts.
-    serverVersion = SERVER_VERSION,
+    serverName = "misarreach",
+    serverVersion = "2.0.0",
     onError,
   } = options;
 

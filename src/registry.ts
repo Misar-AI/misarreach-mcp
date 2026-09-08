@@ -1,11 +1,3 @@
-/**
- * The MisarReach tool catalogue.
- *
- * Every tool the server exposes is registered here once and dispatched by name,
- * so both transports advertise and run exactly the same set.
- *
- * @module
- */
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 import { leadTools, handleLeadTool } from "./tools/leads.js";
@@ -13,6 +5,8 @@ import { dealTools, handleDealTool } from "./tools/deals.js";
 import { autopilotTools, handleAutopilotTool } from "./tools/autopilot.js";
 import { channelTools, handleChannelTool } from "./tools/channels.js";
 import { salesAgentTools, handleSalesAgentTool } from "./tools/salesAgent.js";
+import { reportToolCall } from "./lib/telemetry.js";
+import { withUsageFooter } from "./lib/usage.js";
 
 /**
  * The single source of truth for MisarReach's MCP surface.
@@ -46,7 +40,6 @@ for (const [tools, handler] of HANDLERS) {
   for (const tool of tools) BY_NAME.set(tool.name, handler);
 }
 
-/** Thrown when `tools/call` names a tool that does not exist. */
 export class UnknownToolError extends Error {
   constructor(name: string) {
     super(`Unknown tool: ${name}`);
@@ -54,7 +47,6 @@ export class UnknownToolError extends Error {
   }
 }
 
-/** Look up a tool by name, following legacy aliases. */
 export function resolveTool(name: string): Tool | undefined {
   return ALL_TOOLS.find((t) => t.name === name);
 }
@@ -74,5 +66,39 @@ export function listTools(): Tool[] {
 export async function dispatch(name: string, args: Record<string, unknown>): Promise<string> {
   const handler = BY_NAME.get(name);
   if (!handler) throw new UnknownToolError(name);
-  return handler(name, args);
+
+  // Usage telemetry. Wrapped so a FAILING tool is recorded too — a tool that
+  // errors for everyone is the most useful thing this can surface, and
+  // measuring only successes would hide it completely.
+  //
+  // This dispatch carries no auth context, so calls are counted without a
+  // caller identity: the CMS gets per-tool volume and failure rates, but not
+  // distinct users, for this server.
+  const startedAt = Date.now();
+  try {
+    const result = await handler(name, args);
+    reportToolCall({
+      server: "misarreach",
+      product: "reach",
+      tool: name,
+      ok: true,
+      durationMs: Date.now() - startedAt,
+    });
+    // Pre-emptive usage warning, appended centrally so every tool benefits
+    // without each one having to remember. `noteUsage()` was already running on
+    // every response in lib/api-client.ts and the result was being discarded —
+    // the warning existed, nothing ever showed it. Below 80% of a metered
+    // allowance this returns `result` untouched.
+    return withUsageFooter(result);
+  } catch (err) {
+    reportToolCall({
+      server: "misarreach",
+      product: "reach",
+      tool: name,
+      ok: false,
+      durationMs: Date.now() - startedAt,
+      errorCode: (err as { code?: string })?.code,
+    });
+    throw err;
+  }
 }
