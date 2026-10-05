@@ -6,7 +6,7 @@
 [![smithery](https://img.shields.io/badge/smithery-misar%2Fmisarreach--mcp-blue)](https://smithery.ai/server/misar/misarreach-mcp)
 [![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
-**27 tools · 5 prompts · 4 resources · 4 agent skills**
+**31 tools · 5 prompts · 4 resources · 4 agent skills**
 
 Works with Claude (Desktop, Code, and web), Cursor, VS Code, Windsurf, Cline,
 Zed, Gemini CLI, ChatGPT, and any other MCP-compatible client — over stdio or
@@ -78,33 +78,37 @@ Self-hosted instances: set `MISARREACH_BASE_URL`.
 
 | Tool | Description |
 | --- | --- |
-| `list_leads` | List saved leads for the authenticated user. |
-| `search_leads` | Start an AI-powered lead search job. |
-| `get_search_job_status` | Poll the status and results of a lead search job.. |
-| `submit_lead_feedback` | Submit positive or negative feedback on an AI-generated lead message to improve future output quality.. |
-| `discover_companies` | Discover companies matching criteria via Hunter.io. |
-| `enrich_lead` | Enrich a lead with person and company data (seniority, department, LinkedIn, phone, company size, industry). |
-| `verify_emails` | Verify email deliverability for one or more email addresses. |
-| `score_leads` | Trigger on-demand AI scoring for all unscored leads in a job, or a specific set of lead IDs. |
-| `list_lead_lists` | List Hunter.io lead lists associated with the account.. |
-| `create_lead_list` | Create a new Hunter.io lead list.. |
-| `sync_lead_list` | Sync a Hunter.io lead list into local lead records.. |
-| `preview_message` | Generate a sample AI-personalised outreach message for a person. |
-| `send_to_campaign` | Bulk-import selected lead IDs into a campaign's contact list. |
-| `list_deals` | List deals with optional status filter. |
-| `create_deal` | Create a new deal linked to a lead email.. |
-| `update_deal` | Update a deal's status, value, or notes.. |
-| `get_pipeline` | Get the full sales pipeline board with deals grouped by stage (new, contacted, interested, meeting, proposal, closed, lost) plus revenue totals.. |
-| `move_deal_stage` | Move a deal to a new pipeline stage (drag-and-drop equivalent).. |
-| `start_autopilot` | Start an AI autopilot run for outreach automation. |
-| `list_autopilot_runs` | List past autopilot runs with their status and summary results.. |
-| `get_autopilot_status` | Get the current status and progress of a specific autopilot run.. |
-| `get_channels_status` | Get the status, configuration, and delivery stats for all outreach channels (WhatsApp, SMS, push notifications).. |
-| `update_channel` | Enable or disable a specific outreach channel (whatsapp, sms, or push).. |
-| `get_sales_agent_config` | Fetch the current user's AI sales agent configuration.. |
-| `update_sales_agent_config` | Update the AI sales agent configuration (enable/disable, cal link, offer price, reply limits, confidence threshold).. |
-| `get_sales_agent_actions` | Fetch today's AI sales agent actions and summary stats (total actions, deals closed, flagged for human review).. |
-| `process_sales_agent` | Run the AI sales agent pipeline on a conversation — decides the next action and optionally generates a reply. |
+| `list_leads` | List leads already saved to the account, newest first, with paging and search. |
+| `search_leads` | Start an AI lead-search job and return its jobId immediately. |
+| `get_search_job_status` | Poll one lead-search job for its progress and results. |
+| `submit_lead_feedback` | Record whether an AI-generated outreach message for a lead was good or bad, as training signal for future generations. |
+| `discover_companies` | Find COMPANIES matching firmographic criteria, optionally pulling contact emails for each. |
+| `enrich_lead` | Fill in a saved lead's missing person and company detail — seniority, department, LinkedIn, phone, company size, industry. |
+| `verify_emails` | Check whether email addresses are deliverable, one or up to 20 at a time. |
+| `score_leads` | Queue AI qualification scoring for leads — either every unscored lead in a search job, or a specific set of ids. |
+| `list_lead_lists` | List the managed lead lists this account has created or synced. |
+| `create_lead_list` | Create a new, empty managed lead list. |
+| `sync_lead_list` | Import a managed lead list into local lead records so the rest of these tools can work with it. |
+| `preview_message` | Draft a sample AI-personalised outreach message for a named person, to show what the agent would say. |
+| `send_to_campaign` | Add saved leads to a campaign's contact list in bulk, up to 500 at a time. |
+| `list_deals` | List deals as a flat, paged array, optionally filtered by status, with revenue totals alongside. |
+| `create_deal` | Open a new deal against a lead's email address. |
+| `update_deal` | Change a deal's status, value, or notes. |
+| `get_pipeline` | Get the sales pipeline as a board: deals grouped by stage, with revenue totals. |
+| `move_deal_stage` | Move one deal to a different pipeline stage — the equivalent of dragging its card on the board. |
+| `start_autopilot` | Start an autonomous outreach run: give the agent a goal and it finds, contacts and follows up with leads on its own. |
+| `list_autopilot_runs` | List past and running autopilot runs with their status and result summaries. |
+| `get_autopilot_status` | Get the current progress and results of one autopilot run. |
+| `get_channels_status` | Report the configuration, connection state and delivery stats for every outreach channel — WhatsApp, SMS and push. |
+| `update_channel` | Turn one outreach channel on or off — WhatsApp, SMS or push. |
+| `get_sales_agent_config` | Fetch the AI sales agent's current settings: whether it is enabled, its booking link, offer price, reply limits and confidence threshold. |
+| `update_sales_agent_config` | Change the AI sales agent's settings — enable or disable it, set the booking link, offer price, reply limits and confidence threshold. |
+| `get_sales_agent_actions` | Get what the AI sales agent has done today, with summary stats — actions taken, deals created, replies sent. |
+| `process_sales_agent` | Run the sales-agent pipeline over one conversation: decide the next action and carry it out. |
+| `search_verified_leads` | Find people or businesses matching a plain-language description and return only leads with a real way to reach them (email, phone or LinkedIn), each read from a real record — never generated. |
+| `reveal_company_contacts` | Read a company's own website now and return what it publishes: contact emails, a phone number, its social profiles and its detected tech stack. |
+| `company_email_format` | The email address format a company uses (e.g. |
+| `verify_email` | Check whether one email address can receive mail. |
 
 ## Prompts
 

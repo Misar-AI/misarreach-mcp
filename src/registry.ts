@@ -1,3 +1,11 @@
+/**
+ * The MisarReach tool catalogue.
+ *
+ * Every tool the server exposes is registered here once and dispatched by name,
+ * so both transports advertise and run exactly the same set.
+ *
+ * @module
+ */
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 import { leadTools, handleLeadTool } from "./tools/leads.js";
@@ -5,6 +13,7 @@ import { dealTools, handleDealTool } from "./tools/deals.js";
 import { autopilotTools, handleAutopilotTool } from "./tools/autopilot.js";
 import { channelTools, handleChannelTool } from "./tools/channels.js";
 import { salesAgentTools, handleSalesAgentTool } from "./tools/salesAgent.js";
+import { prospectingTools, handleProspectingTool } from "./tools/prospecting.js";
 import { reportToolCall } from "./lib/telemetry.js";
 import { withUsageFooter } from "./lib/usage.js";
 
@@ -22,6 +31,7 @@ export const ALL_TOOLS: Tool[] = [
   ...autopilotTools,
   ...channelTools,
   ...salesAgentTools,
+  ...prospectingTools,
 ];
 
 type Handler = (name: string, args: Record<string, unknown>) => Promise<string>;
@@ -33,6 +43,7 @@ const HANDLERS: Array<[Tool[], Handler]> = [
   [autopilotTools, handleAutopilotTool],
   [channelTools, handleChannelTool],
   [salesAgentTools, handleSalesAgentTool],
+  [prospectingTools, handleProspectingTool],
 ];
 
 const BY_NAME = new Map<string, Handler>();
@@ -40,6 +51,7 @@ for (const [tools, handler] of HANDLERS) {
   for (const tool of tools) BY_NAME.set(tool.name, handler);
 }
 
+/** Thrown when `tools/call` names a tool that does not exist. */
 export class UnknownToolError extends Error {
   constructor(name: string) {
     super(`Unknown tool: ${name}`);
@@ -47,6 +59,7 @@ export class UnknownToolError extends Error {
   }
 }
 
+/** Look up a tool by name, following legacy aliases. */
 export function resolveTool(name: string): Tool | undefined {
   return ALL_TOOLS.find((t) => t.name === name);
 }

@@ -2,7 +2,7 @@
 
 Find leads, enrich and score them, run multi-channel outreach, and manage the sales pipeline — from any AI assistant.
 
-27 tools · 5 prompts ·
+31 tools · 5 prompts ·
 4 resources · 3 agents
 
 **Authentication is required for every tool.** Either run the `login` tool

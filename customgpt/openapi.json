@@ -14,7 +14,7 @@
     "/mcp/tools/list_leads": {
       "post": {
         "operationId": "list_leads",
-        "summary": "List saved leads for the authenticated user. Supports pagination and search by name, email, or company.",
+        "summary": "List leads already saved to the account, newest first, with paging and search. \n\nUse this to work with leads you already have. It does NOT find new ones — that is search_leads, which starts a job and costs credits. Narrow to one search job with job_id when you want just that job's results. \n\nReads o",
         "requestBody": {
           "required": false,
           "content": {
@@ -45,7 +45,7 @@
     "/mcp/tools/search_leads": {
       "post": {
         "operationId": "search_leads",
-        "summary": "Start an AI-powered lead search job. Returns a jobId immediately — poll get_search_job_status for results. Consumes search credits.",
+        "summary": "Start an AI lead-search job and return its jobId immediately. \n\nThis is ASYNCHRONOUS: results are not in the response. Poll get_search_job_status with the jobId until it reports completion, then read the leads with list_leads filtered by that job_id. Use it to find NEW leads; use list_leads for ones",
         "requestBody": {
           "required": false,
           "content": {
@@ -76,7 +76,7 @@
     "/mcp/tools/get_search_job_status": {
       "post": {
         "operationId": "get_search_job_status",
-        "summary": "Poll the status and results of a lead search job.",
+        "summary": "Poll one lead-search job for its progress and results. \n\nThis is the companion to search_leads: call it repeatedly with the jobId you were given until the job reports it has finished. Leave a few seconds between polls — searches take a while, and polling harder does not make them faster. \n\nReads onl",
         "requestBody": {
           "required": false,
           "content": {
@@ -107,7 +107,7 @@
     "/mcp/tools/submit_lead_feedback": {
       "post": {
         "operationId": "submit_lead_feedback",
-        "summary": "Submit positive or negative feedback on an AI-generated lead message to improve future output quality.",
+        "summary": "Record whether an AI-generated outreach message for a lead was good or bad, as training signal for future generations. \n\nUse it when the user judges a drafted message — it improves later output rather than changing anything now. It does not edit, resend, or delete the message, and it sends nothing t",
         "requestBody": {
           "required": false,
           "content": {
@@ -138,7 +138,7 @@
     "/mcp/tools/discover_companies": {
       "post": {
         "operationId": "discover_companies",
-        "summary": "Discover companies matching criteria via Hunter.io. Optionally fetch contact emails for each company.",
+        "summary": "Find COMPANIES matching firmographic criteria, optionally pulling contact emails for each. \n\nThis is company-level discovery — reach for it when the user is targeting organisations by industry, location, headcount or tech stack. When they want named people, use search_leads. Filters combine with AND",
         "requestBody": {
           "required": false,
           "content": {
@@ -169,7 +169,7 @@
     "/mcp/tools/enrich_lead": {
       "post": {
         "operationId": "enrich_lead",
-        "summary": "Enrich a lead with person and company data (seniority, department, LinkedIn, phone, company size, industry). Consumes enrichment credits.",
+        "summary": "Fill in a saved lead's missing person and company detail — seniority, department, LinkedIn, phone, company size, industry. \n\nUse it on one lead at a time, after list_leads has given you its id, and typically before writing outreach that needs context. Check the lead first: enriching one that already",
         "requestBody": {
           "required": false,
           "content": {
@@ -200,7 +200,7 @@
     "/mcp/tools/verify_emails": {
       "post": {
         "operationId": "verify_emails",
-        "summary": "Verify email deliverability for one or more email addresses. Consumes verification credits.",
+        "summary": "Check whether email addresses are deliverable, one or up to 20 at a time. \n\nRun this before a send to protect sender reputation — bouncing a campaign off dead addresses is what gets a domain blocked. Pass either `email` for one or `emails` for a batch, not both. \n\nCONSUMES VERIFICATION CREDITS per a",
         "requestBody": {
           "required": false,
           "content": {
@@ -231,7 +231,7 @@
     "/mcp/tools/score_leads": {
       "post": {
         "operationId": "score_leads",
-        "summary": "Trigger on-demand AI scoring for all unscored leads in a job, or a specific set of lead IDs. Runs in background — returns immediately with count. Consumes AI credits.",
+        "summary": "Queue AI qualification scoring for leads — either every unscored lead in a search job, or a specific set of ids. \n\nPass jobId OR leadIds, not both. This runs in the BACKGROUND: it returns a count immediately and the scores appear on the leads afterwards, so re-read them with list_leads rather than e",
         "requestBody": {
           "required": false,
           "content": {
@@ -262,7 +262,7 @@
     "/mcp/tools/list_lead_lists": {
       "post": {
         "operationId": "list_lead_lists",
-        "summary": "List Hunter.io lead lists associated with the account.",
+        "summary": "List the managed lead lists this account has created or synced. \n\nUse it to find a listId before sync_lead_list, or to check whether a list already exists before create_lead_list makes a duplicate. These lists are held apart from the saved leads, which are separate from the leads stored locally — li",
         "requestBody": {
           "required": false,
           "content": {
@@ -293,7 +293,7 @@
     "/mcp/tools/create_lead_list": {
       "post": {
         "operationId": "create_lead_list",
-        "summary": "Create a new Hunter.io lead list.",
+        "summary": "Create a new, empty managed lead list. \n\nCreating the list does not put anything in it, and it does not import anything locally — sync_lead_list does that. Call list_lead_lists first: each call creates a NEW list and nothing deduplicates by name. \n\nRequires an API key. Costs no credits. Returns the ",
         "requestBody": {
           "required": false,
           "content": {
@@ -324,7 +324,7 @@
     "/mcp/tools/sync_lead_list": {
       "post": {
         "operationId": "sync_lead_list",
-        "summary": "Sync a Hunter.io lead list into local lead records.",
+        "summary": "Import a managed lead list into local lead records so the rest of these tools can work with it. \n\nRun it after create_lead_list, or on any existing list from list_lead_lists, to pull its contacts in. Until a list is synced its contacts are invisible to list_leads, enrich_lead and send_to_campaign. \n",
         "requestBody": {
           "required": false,
           "content": {
@@ -355,7 +355,7 @@
     "/mcp/tools/preview_message": {
       "post": {
         "operationId": "preview_message",
-        "summary": "Generate a sample AI-personalised outreach message for a person. Public endpoint — no auth required.",
+        "summary": "Draft a sample AI-personalised outreach message for a named person, to show what the agent would say. \n\nThis is a PREVIEW: nothing is sent, saved, or attached to a lead or campaign. Use it to check tone before committing to a sequence. The person does not need to exist as a lead — pass their name an",
         "requestBody": {
           "required": false,
           "content": {
@@ -386,7 +386,7 @@
     "/mcp/tools/send_to_campaign": {
       "post": {
         "operationId": "send_to_campaign",
-        "summary": "Bulk-import selected lead IDs into a campaign's contact list. Leads must belong to the authenticated user.",
+        "summary": "Add saved leads to a campaign's contact list in bulk, up to 500 at a time. \n\nThis is how leads enter an outreach sequence, so treat it as consequential: once they are on a running campaign's list they can start receiving messages. It does NOT send anything by itself and does not start the campaign —",
         "requestBody": {
           "required": false,
           "content": {
@@ -417,7 +417,7 @@
     "/mcp/tools/list_deals": {
       "post": {
         "operationId": "list_deals",
-        "summary": "List deals with optional status filter. Returns deals array plus revenue summary (total, closed, pipeline).",
+        "summary": "List deals as a flat, paged array, optionally filtered by status, with revenue totals alongside. \n\nUse this when you want deals as data — to count them, filter one status, or page through many. For the board view with deals grouped into stages, use get_pipeline instead; the two return the same deals",
         "requestBody": {
           "required": false,
           "content": {
@@ -448,7 +448,7 @@
     "/mcp/tools/create_deal": {
       "post": {
         "operationId": "create_deal",
-        "summary": "Create a new deal linked to a lead email.",
+        "summary": "Open a new deal against a lead's email address. \n\nUse it when a conversation turns into a real opportunity worth tracking. Each call creates a NEW deal — it does not check for an existing one on the same email, so list_deals first if you might be duplicating. To change a deal that exists, use update",
         "requestBody": {
           "required": false,
           "content": {
@@ -479,7 +479,7 @@
     "/mcp/tools/update_deal": {
       "post": {
         "operationId": "update_deal",
-        "summary": "Update a deal's status, value, or notes.",
+        "summary": "Change a deal's status, value, or notes. \n\nOnly the fields you pass are altered. For moving a deal along the pipeline board prefer move_deal_stage, which is the same operation expressed in stage terms; use this one for value and notes. Setting status to 'closed' or 'lost' marks the deal resolved and",
         "requestBody": {
           "required": false,
           "content": {
@@ -510,7 +510,7 @@
     "/mcp/tools/get_pipeline": {
       "post": {
         "operationId": "get_pipeline",
-        "summary": "Get the full sales pipeline board with deals grouped by stage (new, contacted, interested, meeting, proposal, closed, lost) plus revenue totals.",
+        "summary": "Get the sales pipeline as a board: deals grouped by stage, with revenue totals. \n\nUse this for 'how does the pipeline look' questions and stage-by-stage review. It is the board view of the same deals list_deals returns flat — reach for that one when you need filtering or paging, since this returns t",
         "requestBody": {
           "required": false,
           "content": {
@@ -541,7 +541,7 @@
     "/mcp/tools/move_deal_stage": {
       "post": {
         "operationId": "move_deal_stage",
-        "summary": "Move a deal to a new pipeline stage (drag-and-drop equivalent).",
+        "summary": "Move one deal to a different pipeline stage — the equivalent of dragging its card on the board. \n\nThis is the tool for pipeline progression; update_deal is for value and notes. Moving to 'closed' or 'lost' resolves the deal and removes it from open pipeline revenue, which changes reported figures — ",
         "requestBody": {
           "required": false,
           "content": {
@@ -572,7 +572,7 @@
     "/mcp/tools/start_autopilot": {
       "post": {
         "operationId": "start_autopilot",
-        "summary": "Start an AI autopilot run for outreach automation. Provide a goal and the agent runs fire-and-forget. Returns runId — poll get_autopilot_status for progress. Consumes autopilot credits.",
+        "summary": "Start an autonomous outreach run: give the agent a goal and it finds, contacts and follows up with leads on its own. \n\nThis is the most consequential tool on this server. It is FIRE-AND-FORGET and it SENDS REAL MESSAGES TO REAL PEOPLE without returning for approval, so only start a run when the user",
         "requestBody": {
           "required": false,
           "content": {
@@ -603,7 +603,7 @@
     "/mcp/tools/list_autopilot_runs": {
       "post": {
         "operationId": "list_autopilot_runs",
-        "summary": "List past autopilot runs with their status and summary results.",
+        "summary": "List past and running autopilot runs with their status and result summaries. \n\nUse it to review what has already been run — and to check for a run already in flight before start_autopilot launches a second one against the same goal. For detail on one run, use get_autopilot_status. \n\nReads only, cost",
         "requestBody": {
           "required": false,
           "content": {
@@ -634,7 +634,7 @@
     "/mcp/tools/get_autopilot_status": {
       "post": {
         "operationId": "get_autopilot_status",
-        "summary": "Get the current status and progress of a specific autopilot run.",
+        "summary": "Get the current progress and results of one autopilot run. \n\nThis is how you follow a run started by start_autopilot: call it with the runId, leaving time between polls. Reading status does not pause, stop, or alter the run in any way — it keeps going regardless, and there is no tool here to stop it",
         "requestBody": {
           "required": false,
           "content": {
@@ -665,7 +665,7 @@
     "/mcp/tools/get_channels_status": {
       "post": {
         "operationId": "get_channels_status",
-        "summary": "Get the status, configuration, and delivery stats for all outreach channels (WhatsApp, SMS, push notifications).",
+        "summary": "Report the configuration, connection state and delivery stats for every outreach channel — WhatsApp, SMS and push. \n\nCheck this before relying on a channel: a disabled or unconfigured one silently delivers nothing. It is also the natural first step before update_channel, so you know the current stat",
         "requestBody": {
           "required": false,
           "content": {
@@ -696,7 +696,7 @@
     "/mcp/tools/update_channel": {
       "post": {
         "operationId": "update_channel",
-        "summary": "Enable or disable a specific outreach channel (whatsapp, sms, or push).",
+        "summary": "Turn one outreach channel on or off — WhatsApp, SMS or push. \n\nThis changes how the account actually delivers messages, so it affects live campaigns and autopilot runs, not just future ones. DISABLING a channel silently stops delivery over it; enabling one that has no credentials configured will not",
         "requestBody": {
           "required": false,
           "content": {
@@ -727,7 +727,7 @@
     "/mcp/tools/get_sales_agent_config": {
       "post": {
         "operationId": "get_sales_agent_config",
-        "summary": "Fetch the current user's AI sales agent configuration.",
+        "summary": "Fetch the AI sales agent's current settings: whether it is enabled, its booking link, offer price, reply limits and confidence threshold. \n\nRead this before update_sales_agent_config so you change one field without clobbering the rest, and to check whether the agent is enabled at all before expectin",
         "requestBody": {
           "required": false,
           "content": {
@@ -758,7 +758,7 @@
     "/mcp/tools/update_sales_agent_config": {
       "post": {
         "operationId": "update_sales_agent_config",
-        "summary": "Update the AI sales agent configuration (enable/disable, cal link, offer price, reply limits, confidence threshold).",
+        "summary": "Change the AI sales agent's settings — enable or disable it, set the booking link, offer price, reply limits and confidence threshold. \n\nThese settings govern an agent that replies to real prospects, so treat them as live: ENABLING it lets it start responding on its own, the confidence threshold dec",
         "requestBody": {
           "required": false,
           "content": {
@@ -789,7 +789,7 @@
     "/mcp/tools/get_sales_agent_actions": {
       "post": {
         "operationId": "get_sales_agent_actions",
-        "summary": "Fetch today's AI sales agent actions and summary stats (total actions, deals closed, flagged for human review).",
+        "summary": "Get what the AI sales agent has done today, with summary stats — actions taken, deals created, replies sent. \n\nThis is the audit trail: use it to see what the agent did on the account's behalf, and to sanity-check its behaviour after enabling it. Covers TODAY only, so it is not the tool for historic",
         "requestBody": {
           "required": false,
           "content": {
@@ -820,7 +820,100 @@
     "/mcp/tools/process_sales_agent": {
       "post": {
         "operationId": "process_sales_agent",
-        "summary": "Run the AI sales agent pipeline on a conversation — decides the next action and optionally generates a reply. Logs the action to the agent activity feed.",
+        "summary": "Run the sales-agent pipeline over one conversation: decide the next action and carry it out. \n\nThis ACTS on a real conversation — depending on what it decides, it can reply to the prospect, create a deal, or book a meeting. It is not a dry run and there is no preview, so call it only when the user w",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          }
+        }
+      }
+    },
+    "/mcp/tools/search_verified_leads": {
+      "post": {
+        "operationId": "search_verified_leads",
+        "summary": "Find people or businesses matching a plain-language description and return only leads with a real way to reach them (email, phone or LinkedIn), each read from a real record — never generated. Waits for the search to finish (up to wait_seconds) and returns the leads with each email's verification sta",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          }
+        }
+      }
+    },
+    "/mcp/tools/reveal_company_contacts": {
+      "post": {
+        "operationId": "reveal_company_contacts",
+        "summary": "Read a company's own website now and return what it publishes: contact emails, a phone number, its social profiles and its detected tech stack. robots.txt is obeyed. One enrichment credit, charged only when the site publishes a way to reach the company, and at most once per company per day.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          }
+        }
+      }
+    },
+    "/mcp/tools/company_email_format": {
+      "post": {
+        "operationId": "company_email_format",
+        "summary": "The email address format a company uses (e.g. {first}.{last}@acme.com), learned only from addresses that were verified deliverable, with each pattern's share and a confidence level. Free. Returns 'not published' when there is not yet enough verified evidence for the domain.",
         "requestBody": {
           "required": false,
           "content": {

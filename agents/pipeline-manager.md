@@ -3,7 +3,7 @@ name: pipeline-manager
 description: Reviews deals, moves stages on real signals, and reports pipeline health.
 product: MisarReach
 mcp_server: @misarreach/mcp
-tools: 27
+tools: 31
 ---
 
 # pipeline-manager

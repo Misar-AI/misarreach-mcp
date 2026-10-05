@@ -3,7 +3,7 @@ name: lead-researcher
 description: Discovers and enriches companies and leads, verifies emails, and scores the list before any outreach.
 product: MisarReach
 mcp_server: @misarreach/mcp
-tools: 27
+tools: 31
 ---
 
 # lead-researcher

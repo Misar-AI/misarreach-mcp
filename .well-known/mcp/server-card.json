@@ -1,7 +1,7 @@
 {
   "serverInfo": {
     "name": "MisarReach",
-    "version": "2.0.0",
+    "version": "5.2.0",
     "logoUrl": "https://reach.misar.io/logo-light.png"
   },
   "websiteUrl": "https://www.misarreach.com",
@@ -21,111 +21,127 @@
   "tools": [
     {
       "name": "list_leads",
-      "description": "List saved leads for the authenticated user. Supports pagination and search by name, email, or company."
+      "description": "List leads already saved to the account, newest first, with paging and search. \n\nUse this to work with leads you already have. It does NOT find new ones — that is search_leads, which starts a job and costs credits. Narrow to one search job with job_id when you want just that job's results. \n\nReads only and costs no credits. Requires an API key. Returns saved lead records with contact and company fields plus enrichment and score where present. An empty page is a normal answer, not an error. "
     },
     {
       "name": "search_leads",
-      "description": "Start an AI-powered lead search job. Returns a jobId immediately — poll get_search_job_status for results. Consumes search credits."
+      "description": "Start an AI lead-search job and return its jobId immediately. \n\nThis is ASYNCHRONOUS: results are not in the response. Poll get_search_job_status with the jobId until it reports completion, then read the leads with list_leads filtered by that job_id. Use it to find NEW leads; use list_leads for ones already saved. \n\nCONSUMES SEARCH CREDITS on every call, and each call starts a separate job — do not retry it as a way to check progress. Requires an API key. Setting useAI additionally spends AI credits to enrich and score the results as they arrive. "
     },
     {
       "name": "get_search_job_status",
-      "description": "Poll the status and results of a lead search job."
+      "description": "Poll one lead-search job for its progress and results. \n\nThis is the companion to search_leads: call it repeatedly with the jobId you were given until the job reports it has finished. Leave a few seconds between polls — searches take a while, and polling harder does not make them faster. \n\nReads only and costs no credits, however many times you call it. Requires an API key. Returns the run state, progress, and the leads found so far; a job still running is a normal answer, not an error. "
     },
     {
       "name": "submit_lead_feedback",
-      "description": "Submit positive or negative feedback on an AI-generated lead message to improve future output quality."
+      "description": "Record whether an AI-generated outreach message for a lead was good or bad, as training signal for future generations. \n\nUse it when the user judges a drafted message — it improves later output rather than changing anything now. It does not edit, resend, or delete the message, and it sends nothing to the lead. \n\nWrites a feedback record; sending the same verdict twice is harmless. Requires an API key. Costs no credits. "
     },
     {
       "name": "discover_companies",
-      "description": "Discover companies matching criteria via Hunter.io. Optionally fetch contact emails for each company."
+      "description": "Find COMPANIES matching firmographic criteria, optionally pulling contact emails for each. \n\nThis is company-level discovery — reach for it when the user is targeting organisations by industry, location, headcount or tech stack. When they want named people, use search_leads. Filters combine with AND, so stacking many narrows results sharply. \n\nRequires an API key. Setting fetch_emails=true performs email lookups and COSTS CREDITS; leaving it false is a plain company search. Returns matching companies with firmographics. No lead is saved to the account by this call. "
     },
     {
       "name": "enrich_lead",
-      "description": "Enrich a lead with person and company data (seniority, department, LinkedIn, phone, company size, industry). Consumes enrichment credits."
+      "description": "Fill in a saved lead's missing person and company detail — seniority, department, LinkedIn, phone, company size, industry. \n\nUse it on one lead at a time, after list_leads has given you its id, and typically before writing outreach that needs context. Check the lead first: enriching one that already has these fields spends credits for nothing. \n\nCONSUMES ENRICHMENT CREDITS per call. Requires an API key. Updates the stored lead in place and returns it; it does not create a new record, and running it twice does not duplicate the lead — but it does bill twice. "
     },
     {
       "name": "verify_emails",
-      "description": "Verify email deliverability for one or more email addresses. Consumes verification credits."
+      "description": "Check whether email addresses are deliverable, one or up to 20 at a time. \n\nRun this before a send to protect sender reputation — bouncing a campaign off dead addresses is what gets a domain blocked. Pass either `email` for one or `emails` for a batch, not both. \n\nCONSUMES VERIFICATION CREDITS per address checked, so a 20-address batch costs 20. Requires an API key. Returns a deliverability verdict per address; 'undeliverable' is a successful result, not an error. Nothing is sent to the addresses. "
     },
     {
       "name": "score_leads",
-      "description": "Trigger on-demand AI scoring for all unscored leads in a job, or a specific set of lead IDs. Runs in background — returns immediately with count. Consumes AI credits."
+      "description": "Queue AI qualification scoring for leads — either every unscored lead in a search job, or a specific set of ids. \n\nPass jobId OR leadIds, not both. This runs in the BACKGROUND: it returns a count immediately and the scores appear on the leads afterwards, so re-read them with list_leads rather than expecting scores in this response. \n\nCONSUMES AI CREDITS per lead scored. Requires an API key. Passing leadIds rescores leads even if they already have a score, which bills again — pass jobId to score only what is unscored. Caps at 200 ids per call. "
     },
     {
       "name": "list_lead_lists",
-      "description": "List Hunter.io lead lists associated with the account."
+      "description": "List the managed lead lists this account has created or synced. \n\nUse it to find a listId before sync_lead_list, or to check whether a list already exists before create_lead_list makes a duplicate. These lists are held apart from the saved leads, which are separate from the leads stored locally — list_leads shows those. \n\nReads only, costs no credits, takes no parameters. Requires an API key. Only this account's lists are returned. An empty result means no lists exist yet. "
     },
     {
       "name": "create_lead_list",
-      "description": "Create a new Hunter.io lead list."
+      "description": "Create a new, empty managed lead list. \n\nCreating the list does not put anything in it, and it does not import anything locally — sync_lead_list does that. Call list_lead_lists first: each call creates a NEW list and nothing deduplicates by name. \n\nRequires an API key. Costs no credits. Returns the created list with the id that sync_lead_list needs. "
     },
     {
       "name": "sync_lead_list",
-      "description": "Sync a Hunter.io lead list into local lead records."
+      "description": "Import a managed lead list into local lead records so the rest of these tools can work with it. \n\nRun it after create_lead_list, or on any existing list from list_lead_lists, to pull its contacts in. Until a list is synced its contacts are invisible to list_leads, enrich_lead and send_to_campaign. \n\nWrites local lead records. Re-syncing the same list refreshes rather than duplicating, so it is safe to repeat. Requires an API key. Costs no credits; enrichment and verification are billed separately. "
     },
     {
       "name": "preview_message",
-      "description": "Generate a sample AI-personalised outreach message for a person. Public endpoint — no auth required."
+      "description": "Draft a sample AI-personalised outreach message for a named person, to show what the agent would say. \n\nThis is a PREVIEW: nothing is sent, saved, or attached to a lead or campaign. Use it to check tone before committing to a sequence. The person does not need to exist as a lead — pass their name and, if known, role and company. \n\nThis is the one tool here that needs no API key. Generative, so the same input yields different wording each time. Returns the drafted message text. "
     },
     {
       "name": "send_to_campaign",
-      "description": "Bulk-import selected lead IDs into a campaign's contact list. Leads must belong to the authenticated user."
+      "description": "Add saved leads to a campaign's contact list in bulk, up to 500 at a time. \n\nThis is how leads enter an outreach sequence, so treat it as consequential: once they are on a running campaign's list they can start receiving messages. It does NOT send anything by itself and does not start the campaign — but it removes the last step before the campaign does. \n\nEvery lead must belong to the authenticated account, or the call fails. Adding a lead already on the list does not duplicate it. Requires an API key. Verify addresses with verify_emails first; importing dead ones damages sender reputation. "
     },
     {
       "name": "list_deals",
-      "description": "List deals with optional status filter. Returns deals array plus revenue summary (total, closed, pipeline)."
+      "description": "List deals as a flat, paged array, optionally filtered by status, with revenue totals alongside. \n\nUse this when you want deals as data — to count them, filter one status, or page through many. For the board view with deals grouped into stages, use get_pipeline instead; the two return the same deals in different shapes. \n\nReads only. Requires an API key. Returns the deals plus a summary of total, closed and open pipeline revenue. Money is in minor currency units (cents), so divide by 100 before showing it. "
     },
     {
       "name": "create_deal",
-      "description": "Create a new deal linked to a lead email."
+      "description": "Open a new deal against a lead's email address. \n\nUse it when a conversation turns into a real opportunity worth tracking. Each call creates a NEW deal — it does not check for an existing one on the same email, so list_deals first if you might be duplicating. To change a deal that exists, use update_deal. \n\nRequires an API key. `value` is in MINOR CURRENCY UNITS — 2500 means $25.00, not $2500 — and defaults to 0 with currency USD. Returns the created deal, which enters the pipeline at the first stage. "
     },
     {
       "name": "update_deal",
-      "description": "Update a deal's status, value, or notes."
+      "description": "Change a deal's status, value, or notes. \n\nOnly the fields you pass are altered. For moving a deal along the pipeline board prefer move_deal_stage, which is the same operation expressed in stage terms; use this one for value and notes. Setting status to 'closed' or 'lost' marks the deal resolved and takes it out of open pipeline revenue. \n\nSafe to repeat — the same call twice leaves the same deal. Requires an API key, and the account must own the deal. `value` is in MINOR CURRENCY UNITS (2500 = $25.00). Notes REPLACE the existing note rather than appending. "
     },
     {
       "name": "get_pipeline",
-      "description": "Get the full sales pipeline board with deals grouped by stage (new, contacted, interested, meeting, proposal, closed, lost) plus revenue totals."
+      "description": "Get the sales pipeline as a board: deals grouped by stage, with revenue totals. \n\nUse this for 'how does the pipeline look' questions and stage-by-stage review. It is the board view of the same deals list_deals returns flat — reach for that one when you need filtering or paging, since this returns the whole board. \n\nReads only. Requires an API key. Stages are new, contacted, interested, meeting, proposal, closed and lost. Money is in minor currency units (cents), so divide by 100 before showing it. "
     },
     {
       "name": "move_deal_stage",
-      "description": "Move a deal to a new pipeline stage (drag-and-drop equivalent)."
+      "description": "Move one deal to a different pipeline stage — the equivalent of dragging its card on the board. \n\nThis is the tool for pipeline progression; update_deal is for value and notes. Moving to 'closed' or 'lost' resolves the deal and removes it from open pipeline revenue, which changes reported figures — only do it when the user says the outcome is settled. \n\nSafe to repeat: moving a deal to the stage it is already in changes nothing. Stages are not ordered by this call, so it can move a deal backwards as easily as forwards. Requires an API key. "
     },
     {
       "name": "start_autopilot",
-      "description": "Start an AI autopilot run for outreach automation. Provide a goal and the agent runs fire-and-forget. Returns runId — poll get_autopilot_status for progress. Consumes autopilot credits."
+      "description": "Start an autonomous outreach run: give the agent a goal and it finds, contacts and follows up with leads on its own. \n\nThis is the most consequential tool on this server. It is FIRE-AND-FORGET and it SENDS REAL MESSAGES TO REAL PEOPLE without returning for approval, so only start a run when the user has explicitly asked for one and understands the goal as written — the goal text is the entire brief. It returns a runId immediately; watch progress with get_autopilot_status. \n\nCONSUMES AUTOPILOT CREDITS, plus search, enrichment and AI credits as it works. Requires an API key. Each call starts a SEPARATE run — calling twice runs two campaigns concurrently against the same goal. "
     },
     {
       "name": "list_autopilot_runs",
-      "description": "List past autopilot runs with their status and summary results."
+      "description": "List past and running autopilot runs with their status and result summaries. \n\nUse it to review what has already been run — and to check for a run already in flight before start_autopilot launches a second one against the same goal. For detail on one run, use get_autopilot_status. \n\nReads only, costs no credits, and starts nothing. Requires an API key. Returns runs newest first with paging. "
     },
     {
       "name": "get_autopilot_status",
-      "description": "Get the current status and progress of a specific autopilot run."
+      "description": "Get the current progress and results of one autopilot run. \n\nThis is how you follow a run started by start_autopilot: call it with the runId, leaving time between polls. Reading status does not pause, stop, or alter the run in any way — it keeps going regardless, and there is no tool here to stop it. \n\nReads only and costs no credits, however often you call it. Requires an API key. A run still in progress is a normal answer, not an error. "
     },
     {
       "name": "get_channels_status",
-      "description": "Get the status, configuration, and delivery stats for all outreach channels (WhatsApp, SMS, push notifications)."
+      "description": "Report the configuration, connection state and delivery stats for every outreach channel — WhatsApp, SMS and push. \n\nCheck this before relying on a channel: a disabled or unconfigured one silently delivers nothing. It is also the natural first step before update_channel, so you know the current state rather than toggling blind. \n\nReads only, takes no parameters, and changes nothing. Requires an API key. Returns each channel with whether it is enabled, whether credentials are configured, and recent delivery counts. "
     },
     {
       "name": "update_channel",
-      "description": "Enable or disable a specific outreach channel (whatsapp, sms, or push)."
+      "description": "Turn one outreach channel on or off — WhatsApp, SMS or push. \n\nThis changes how the account actually delivers messages, so it affects live campaigns and autopilot runs, not just future ones. DISABLING a channel silently stops delivery over it; enabling one that has no credentials configured will not make it work. Call get_channels_status first to see where things stand. \n\nHandles one channel per call. Safe to repeat: setting a channel to the state it is already in changes nothing. Requires an API key. "
     },
     {
       "name": "get_sales_agent_config",
-      "description": "Fetch the current user's AI sales agent configuration."
+      "description": "Fetch the AI sales agent's current settings: whether it is enabled, its booking link, offer price, reply limits and confidence threshold. \n\nRead this before update_sales_agent_config so you change one field without clobbering the rest, and to check whether the agent is enabled at all before expecting it to act. \n\nReads only, takes no parameters, changes nothing. Requires an API key. Returns the configuration for the authenticated account. "
     },
     {
       "name": "update_sales_agent_config",
-      "description": "Update the AI sales agent configuration (enable/disable, cal link, offer price, reply limits, confidence threshold)."
+      "description": "Change the AI sales agent's settings — enable or disable it, set the booking link, offer price, reply limits and confidence threshold. \n\nThese settings govern an agent that replies to real prospects, so treat them as live: ENABLING it lets it start responding on its own, the confidence threshold decides how sure it must be before acting, and reply limits cap how much it can send. Read the current config first — only the fields you pass change, but a wrong value takes effect immediately. \n\nSafe to repeat. Requires an API key. "
     },
     {
       "name": "get_sales_agent_actions",
-      "description": "Fetch today's AI sales agent actions and summary stats (total actions, deals closed, flagged for human review)."
+      "description": "Get what the AI sales agent has done today, with summary stats — actions taken, deals created, replies sent. \n\nThis is the audit trail: use it to see what the agent did on the account's behalf, and to sanity-check its behaviour after enabling it. Covers TODAY only, so it is not the tool for historical reporting. \n\nReads only and changes nothing; it does not approve or undo any action. Requires an API key. No actions today is a normal answer, not an error. "
     },
     {
       "name": "process_sales_agent",
-      "description": "Run the AI sales agent pipeline on a conversation — decides the next action and optionally generates a reply. Logs the action to the agent activity feed."
+      "description": "Run the sales-agent pipeline over one conversation: decide the next action and carry it out. \n\nThis ACTS on a real conversation — depending on what it decides, it can reply to the prospect, create a deal, or book a meeting. It is not a dry run and there is no preview, so call it only when the user wants the agent to take its turn on that specific conversation. For what it has already done, use get_sales_agent_actions. \n\nCONSUMES AI CREDITS. Not idempotent: calling twice processes the conversation twice and can send two messages. Requires an API key, and the agent's configured confidence threshold still governs whether it acts. "
+    },
+    {
+      "name": "search_verified_leads",
+      "description": "Find people or businesses matching a plain-language description and return only leads with a real way to reach them (email, phone or LinkedIn), each read from a real record — never generated. Waits for the search to finish (up to wait_seconds) and returns the leads with each email's verification status; if it is still running, call again with the returned job_id. Consumes one search from the plan allowance or wallet."
+    },
+    {
+      "name": "reveal_company_contacts",
+      "description": "Read a company's own website now and return what it publishes: contact emails, a phone number, its social profiles and its detected tech stack. robots.txt is obeyed. One enrichment credit, charged only when the site publishes a way to reach the company, and at most once per company per day."
+    },
+    {
+      "name": "company_email_format",
+      "description": "The email address format a company uses (e.g. {first}.{last}@acme.com), learned only from addresses that were verified deliverable, with each pattern's share and a confidence level. Free. Returns 'not published' when there is not yet enough verified evidence for the domain."
+    },
+    {
+      "name": "verify_email",
+      "description": "Check whether one email address can receive mail. Returns valid, invalid, accept_all (a catch-all domain: the server accepts every address, so this one cannot be confirmed — do not treat it as valid), webmail, disposable or unknown. Consumes one verification credit."
     }
   ],
   "prompts": [

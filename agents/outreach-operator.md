@@ -3,7 +3,7 @@ name: outreach-operator
 description: Builds and previews multi-channel sequences, then sends to campaign only after explicit approval.
 product: MisarReach
 mcp_server: @misarreach/mcp
-tools: 27
+tools: 31
 ---
 
 # outreach-operator
