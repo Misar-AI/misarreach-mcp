@@ -43,7 +43,9 @@ export const channelTools: Tool[] = [
     annotations: {
       title: "Enable or disable channel",
       readOnlyHint: false,
-      destructiveHint: false,
+      // Disabling a channel silently halts delivery for live campaigns and
+      // autopilot runs; messages missed in the gap are not re-sent.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: false,
     },

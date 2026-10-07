@@ -43,7 +43,9 @@ export const salesAgentTools: Tool[] = [
     annotations: {
       title: "Update sales agent config",
       readOnlyHint: false,
-      destructiveHint: false,
+      // Overwrites live agent settings (null clears the booking link and offer
+      // text), and enabling lets the agent reply to real prospects unattended.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: false,
     },

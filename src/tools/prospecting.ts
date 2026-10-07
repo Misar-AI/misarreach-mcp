@@ -96,11 +96,14 @@ export const prospectingTools: Tool[] = [
     description:
       "Check whether one email address can receive mail. Returns valid, invalid, accept_all (a catch-all domain: the server " +
       "accepts every address, so this one cannot be confirmed — do not treat it as valid), webmail, disposable or unknown. " +
-      "Consumes one verification credit.",
+      "Consumes one verification credit. The verdict is saved onto any lead you hold with that address, replacing its previous " +
+      "verification status.",
     annotations: {
       title: "Verify one email",
-      readOnlyHint: true,
-      destructiveHint: false,
+      readOnlyHint: false,
+      // Not read-only: the verdict is written onto matching saved leads,
+      // replacing the stored verification status.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },

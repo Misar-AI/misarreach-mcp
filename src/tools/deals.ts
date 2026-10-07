@@ -80,14 +80,18 @@ export const dealTools: Tool[] = [
       "this one for value and notes. Setting status to 'closed' or 'lost' marks the deal " +
       "resolved and takes it out of open pipeline revenue. " +
       "\n\n" +
-      "Safe to repeat — the same call twice leaves the same deal. Requires an API key, and " +
-      "the account must own the deal. `value` is in MINOR CURRENCY UNITS (2500 = $25.00). " +
+      "Do not repeat it blindly: each call is added to the deal's activity history, and " +
+      "setting 'closed' again re-stamps the close date. Requires an API key, and the " +
+      "account must own the deal. `value` is in MINOR CURRENCY UNITS (2500 = $25.00). " +
       "Notes REPLACE the existing note rather than appending. ",
     annotations: {
       title: "Update deal",
       readOnlyHint: false,
-      destructiveHint: false,
-      idempotentHint: true,
+      // Status 'closed'/'lost' resolves the deal and removes it from open
+      // pipeline revenue; notes and value are replaced, not appended. Not
+      // idempotent: each call logs activity and 'closed' re-stamps closed_at.
+      destructiveHint: true,
+      idempotentHint: false,
       openWorldHint: false,
     },
     inputSchema: {
@@ -142,15 +146,20 @@ export const dealTools: Tool[] = [
       "revenue, which changes reported figures — only do it when the user says the outcome " +
       "is settled. " +
       "\n\n" +
-      "Safe to repeat: moving a deal to the stage it is already in changes nothing. Stages " +
-      "are not ordered by this call, so it can move a deal backwards as easily as forwards. " +
+      "Moving a deal into 'closed' notifies the account and fires its deal-won webhook if " +
+      "one is set up; moving an already-closed deal to 'closed' again re-stamps its close " +
+      "date. Stages are not ordered by this call, so it can move a deal backwards as easily " +
+      "as forwards. " +
       "Requires an API key. ",
     annotations: {
       title: "Move deal stage",
       readOnlyHint: false,
-      destructiveHint: false,
-      idempotentHint: true,
-      openWorldHint: false,
+      // Moving to 'closed'/'lost' resolves the deal. Moving into 'closed' also
+      // fires the account's deal-won webhook (outside this system) and re-stamps
+      // closed_at on every call, so it is neither closed-world nor idempotent.
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
     },
     inputSchema: {
       type: "object",

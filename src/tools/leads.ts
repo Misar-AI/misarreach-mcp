@@ -173,12 +173,15 @@ export const leadTools: Tool[] = [
       "already has these fields spends credits for nothing. " +
       "\n\n" +
       "CONSUMES ENRICHMENT CREDITS per call. Requires an API key. Updates the stored lead " +
-      "in place and returns it; it does not create a new record, and running it twice does " +
-      "not duplicate the lead — but it does bill twice. ",
+      "in place, OVERWRITING its existing phone, LinkedIn, seniority and company fields " +
+      "with the fresh values, and returns it; it does not create a new record, and running " +
+      "it twice does not duplicate the lead — but it does bill twice. ",
     annotations: {
       title: "Enrich lead",
       readOnlyHint: false,
-      destructiveHint: false,
+      // Overwrites the lead's stored contact and company fields in place; the
+      // previous values are not kept.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -201,11 +204,15 @@ export const leadTools: Tool[] = [
       "\n\n" +
       "CONSUMES VERIFICATION CREDITS per address checked, so a 20-address batch costs 20. " +
       "Requires an API key. Returns a deliverability verdict per address; 'undeliverable' " +
-      "is a successful result, not an error. Nothing is sent to the addresses. ",
+      "is a successful result, not an error. Nothing is sent to the addresses. Each verdict " +
+      "is saved onto any lead you hold with that address, replacing its previous " +
+      "verification status. ",
     annotations: {
       title: "Verify emails",
-      readOnlyHint: true,
-      destructiveHint: false,
+      readOnlyHint: false,
+      // Not read-only: each verdict is written onto matching saved leads,
+      // replacing the stored verification status.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -233,7 +240,9 @@ export const leadTools: Tool[] = [
     annotations: {
       title: "Score leads",
       readOnlyHint: false,
-      destructiveHint: false,
+      // Writes AI qualification scores onto saved leads, replacing what a
+      // rescore by leadIds finds there; the old score is not kept.
+      destructiveHint: true,
       idempotentHint: false,
       openWorldHint: false,
     },
@@ -301,13 +310,17 @@ export const leadTools: Tool[] = [
       "its contacts in. Until a list is synced its contacts are invisible to list_leads, " +
       "enrich_lead and send_to_campaign. " +
       "\n\n" +
-      "Writes local lead records. Re-syncing the same list refreshes rather than " +
-      "duplicating, so it is safe to repeat. Requires an API key. Costs no credits; " +
-      "enrichment and verification are billed separately. ",
+      "Writes local lead records, and OVERWRITES any saved lead with the same email " +
+      "address: its name, role, company, score and verification status are replaced and it " +
+      "is detached from its search job. Re-syncing the same list refreshes rather than " +
+      "duplicating. Requires an API key. Costs no credits; enrichment and verification are " +
+      "billed separately. ",
     annotations: {
       title: "Sync lead list",
       readOnlyHint: false,
-      destructiveHint: false,
+      // Upserts on email: a saved lead with the same address has its fields,
+      // score and verification status overwritten and loses its search-job link.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -359,12 +372,17 @@ export const leadTools: Tool[] = [
       "step before the campaign does. " +
       "\n\n" +
       "Every lead must belong to the authenticated account, or the call fails. Adding a " +
-      "lead already on the list does not duplicate it. Requires an API key. Verify " +
+      "lead already on the list does not duplicate it, but an existing contact with the " +
+      "same address is OVERWRITTEN and moved onto this campaign's list. Requires an API " +
+      "key. Verify " +
       "addresses with verify_emails first; importing dead ones damages sender reputation. ",
     annotations: {
       title: "Add leads to campaign",
       readOnlyHint: false,
-      destructiveHint: false,
+      // Enrols leads into outreach that sends real messages, and overwrites
+      // existing audience contacts with the same address (moving them onto this
+      // campaign's list). Neither can be undone from this server.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
     },

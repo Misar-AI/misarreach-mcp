@@ -232,7 +232,9 @@ export const authTools: Tool[] = [
     annotations: {
       title: "Log out",
       readOnlyHint: false,
-      destructiveHint: false,
+      // Deletes the stored API key from the local config file; recovering
+      // access means signing in again.
+      destructiveHint: true,
       idempotentHint: true,
       openWorldHint: false,
     },
