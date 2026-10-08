@@ -41,11 +41,11 @@
     },
     {
       "name": "enrich_lead",
-      "description": "Fill in a saved lead's missing person and company detail — seniority, department, LinkedIn, phone, company size, industry. \n\nUse it on one lead at a time, after list_leads has given you its id, and typically before writing outreach that needs context. Check the lead first: enriching one that already has these fields spends credits for nothing. \n\nCONSUMES ENRICHMENT CREDITS per call. Requires an API key. Updates the stored lead in place and returns it; it does not create a new record, and running it twice does not duplicate the lead — but it does bill twice. "
+      "description": "Fill in a saved lead's missing person and company detail — seniority, department, LinkedIn, phone, company size, industry. \n\nUse it on one lead at a time, after list_leads has given you its id, and typically before writing outreach that needs context. Check the lead first: enriching one that already has these fields spends credits for nothing. \n\nCONSUMES ENRICHMENT CREDITS per call. Requires an API key. Updates the stored lead in place, OVERWRITING its existing phone, LinkedIn, seniority and company fields with the fresh values, and returns it; it does not create a new record, and running it twice does not duplicate the lead — but it does bill twice. "
     },
     {
       "name": "verify_emails",
-      "description": "Check whether email addresses are deliverable, one or up to 20 at a time. \n\nRun this before a send to protect sender reputation — bouncing a campaign off dead addresses is what gets a domain blocked. Pass either `email` for one or `emails` for a batch, not both. \n\nCONSUMES VERIFICATION CREDITS per address checked, so a 20-address batch costs 20. Requires an API key. Returns a deliverability verdict per address; 'undeliverable' is a successful result, not an error. Nothing is sent to the addresses. "
+      "description": "Check whether email addresses are deliverable, one or up to 20 at a time. \n\nRun this before a send to protect sender reputation — bouncing a campaign off dead addresses is what gets a domain blocked. Pass either `email` for one or `emails` for a batch, not both. \n\nCONSUMES VERIFICATION CREDITS per address checked, so a 20-address batch costs 20. Requires an API key. Returns a deliverability verdict per address; 'undeliverable' is a successful result, not an error. Nothing is sent to the addresses. Each verdict is saved onto any lead you hold with that address, replacing its previous verification status. "
     },
     {
       "name": "score_leads",
@@ -61,7 +61,7 @@
     },
     {
       "name": "sync_lead_list",
-      "description": "Import a managed lead list into local lead records so the rest of these tools can work with it. \n\nRun it after create_lead_list, or on any existing list from list_lead_lists, to pull its contacts in. Until a list is synced its contacts are invisible to list_leads, enrich_lead and send_to_campaign. \n\nWrites local lead records. Re-syncing the same list refreshes rather than duplicating, so it is safe to repeat. Requires an API key. Costs no credits; enrichment and verification are billed separately. "
+      "description": "Import a managed lead list into local lead records so the rest of these tools can work with it. \n\nRun it after create_lead_list, or on any existing list from list_lead_lists, to pull its contacts in. Until a list is synced its contacts are invisible to list_leads, enrich_lead and send_to_campaign. \n\nWrites local lead records, and OVERWRITES any saved lead with the same email address: its name, role, company, score and verification status are replaced and it is detached from its search job. Re-syncing the same list refreshes rather than duplicating. Requires an API key. Costs no credits; enrichment and verification are billed separately. "
     },
     {
       "name": "preview_message",
@@ -69,7 +69,7 @@
     },
     {
       "name": "send_to_campaign",
-      "description": "Add saved leads to a campaign's contact list in bulk, up to 500 at a time. \n\nThis is how leads enter an outreach sequence, so treat it as consequential: once they are on a running campaign's list they can start receiving messages. It does NOT send anything by itself and does not start the campaign — but it removes the last step before the campaign does. \n\nEvery lead must belong to the authenticated account, or the call fails. Adding a lead already on the list does not duplicate it. Requires an API key. Verify addresses with verify_emails first; importing dead ones damages sender reputation. "
+      "description": "Add saved leads to a campaign's contact list in bulk, up to 500 at a time. \n\nThis is how leads enter an outreach sequence, so treat it as consequential: once they are on a running campaign's list they can start receiving messages. It does NOT send anything by itself and does not start the campaign — but it removes the last step before the campaign does. \n\nEvery lead must belong to the authenticated account, or the call fails. Adding a lead already on the list does not duplicate it, but an existing contact with the same address is OVERWRITTEN and moved onto this campaign's list. Requires an API key. Verify addresses with verify_emails first; importing dead ones damages sender reputation. "
     },
     {
       "name": "list_deals",
@@ -81,7 +81,7 @@
     },
     {
       "name": "update_deal",
-      "description": "Change a deal's status, value, or notes. \n\nOnly the fields you pass are altered. For moving a deal along the pipeline board prefer move_deal_stage, which is the same operation expressed in stage terms; use this one for value and notes. Setting status to 'closed' or 'lost' marks the deal resolved and takes it out of open pipeline revenue. \n\nSafe to repeat — the same call twice leaves the same deal. Requires an API key, and the account must own the deal. `value` is in MINOR CURRENCY UNITS (2500 = $25.00). Notes REPLACE the existing note rather than appending. "
+      "description": "Change a deal's status, value, or notes. \n\nOnly the fields you pass are altered. For moving a deal along the pipeline board prefer move_deal_stage, which is the same operation expressed in stage terms; use this one for value and notes. Setting status to 'closed' or 'lost' marks the deal resolved and takes it out of open pipeline revenue. \n\nDo not repeat it blindly: each call is added to the deal's activity history, and setting 'closed' again re-stamps the close date. Requires an API key, and the account must own the deal. `value` is in MINOR CURRENCY UNITS (2500 = $25.00). Notes REPLACE the existing note rather than appending. "
     },
     {
       "name": "get_pipeline",
@@ -89,7 +89,7 @@
     },
     {
       "name": "move_deal_stage",
-      "description": "Move one deal to a different pipeline stage — the equivalent of dragging its card on the board. \n\nThis is the tool for pipeline progression; update_deal is for value and notes. Moving to 'closed' or 'lost' resolves the deal and removes it from open pipeline revenue, which changes reported figures — only do it when the user says the outcome is settled. \n\nSafe to repeat: moving a deal to the stage it is already in changes nothing. Stages are not ordered by this call, so it can move a deal backwards as easily as forwards. Requires an API key. "
+      "description": "Move one deal to a different pipeline stage — the equivalent of dragging its card on the board. \n\nThis is the tool for pipeline progression; update_deal is for value and notes. Moving to 'closed' or 'lost' resolves the deal and removes it from open pipeline revenue, which changes reported figures — only do it when the user says the outcome is settled. \n\nMoving a deal into 'closed' notifies the account and fires its deal-won webhook if one is set up; moving an already-closed deal to 'closed' again re-stamps its close date. Stages are not ordered by this call, so it can move a deal backwards as easily as forwards. Requires an API key. "
     },
     {
       "name": "start_autopilot",
@@ -141,7 +141,7 @@
     },
     {
       "name": "verify_email",
-      "description": "Check whether one email address can receive mail. Returns valid, invalid, accept_all (a catch-all domain: the server accepts every address, so this one cannot be confirmed — do not treat it as valid), webmail, disposable or unknown. Consumes one verification credit."
+      "description": "Check whether one email address can receive mail. Returns valid, invalid, accept_all (a catch-all domain: the server accepts every address, so this one cannot be confirmed — do not treat it as valid), webmail, disposable or unknown. Consumes one verification credit. The verdict is saved onto any lead you hold with that address, replacing its previous verification status."
     }
   ],
   "prompts": [
