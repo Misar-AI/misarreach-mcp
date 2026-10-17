@@ -168,4 +168,4 @@ Every action does.
 - npm — https://www.npmjs.com/package/@misarreach/mcp
 - Source — https://github.com/Misar-AI/misarreach-mcp
 
-MIT © [Misar AI](https://misar.io)
+MIT © [Misar.AI](https://misar.io)

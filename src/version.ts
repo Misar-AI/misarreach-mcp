@@ -11,4 +11,4 @@
  */
 export const SERVER_NAME = "misarreach";
 /** Package version reported by `initialize`. Keep in step with package.json. */
-export const SERVER_VERSION = "5.2.0";
+export const SERVER_VERSION = "5.2.1";
