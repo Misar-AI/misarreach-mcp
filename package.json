@@ -20,14 +20,14 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.32.1"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
     "@types/node": "^20.19.43"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.20.8"
   },
   "keywords": [
     "mcp",

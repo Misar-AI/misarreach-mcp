@@ -1,16 +1,16 @@
 # Build and run the MisarReach MCP server over stdio.
-FROM node:20-alpine AS build
+FROM node:20.20.2-alpine AS build
 WORKDIR /app
 COPY package.json tsconfig.json ./
-RUN npm install --ignore-scripts
+RUN --mount=type=cache,target=/root/.npm npm install --ignore-scripts
 COPY src ./src
 RUN npx tsc
 
-FROM node:20-alpine
+FROM node:20.20.2-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json ./
-RUN npm install --omit=dev --ignore-scripts
+RUN --mount=type=cache,target=/root/.npm npm install --omit=dev --ignore-scripts
 COPY --from=build /app/dist ./dist
 COPY skills ./skills
 
