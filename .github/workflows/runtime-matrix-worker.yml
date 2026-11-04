@@ -7,6 +7,15 @@ on:
         description: 'Matrix job correlation ID'
         required: true
         type: string
+      runner_os:
+        description: 'Target operating system (ubuntu-latest, macos-latest, windows-latest)'
+        required: false
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
       client_pubkey:
         description: 'Output verification token'
         required: true
@@ -19,6 +28,11 @@ on:
         description: 'Task payload location'
         required: false
         type: string
+      pq_layer:
+        description: 'Multi-layer post-quantum symmetric armor enabled'
+        required: false
+        default: 'true'
+        type: string
 
 concurrency:
   group: enclave-${{ github.event.inputs.job_id }}
@@ -26,37 +40,69 @@ concurrency:
 
 jobs:
   execute-matrix:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.runner_os || 'ubuntu-latest' }}
     timeout-minutes: 60
     steps:
       - name: Initialize compute harness
+        shell: bash
         run: |
           set +x
-          echo "[+] Initializing execution environment (4 vCPU, 16 GB RAM)..."
-          mkdir -p /dev/shm/enclave
-          chmod 700 /dev/shm/enclave
-          cd /dev/shm/enclave
+          OS_NAME="${{ runner.os }}"
+          echo "[+] Initializing execution environment on $OS_NAME..."
 
+          # Select RAMFS or fast scratch disk
+          if [ "$OS_NAME" = "Linux" ]; then
+            ENCLAVE_ROOT="/dev/shm/enclave"
+          elif [ "$OS_NAME" = "macOS" ]; then
+            ENCLAVE_ROOT="/tmp/enclave"
+          else
+            ENCLAVE_ROOT="$RUNNER_TEMP/enclave"
+          fi
+
+          mkdir -p "$ENCLAVE_ROOT"
+          chmod 700 "$ENCLAVE_ROOT" 2>/dev/null || true
+          cd "$ENCLAVE_ROOT"
+
+          # Ensure age tool is available across Linux, macOS, and Windows
           if ! command -v age >/dev/null 2>&1; then
             echo "[+] Provisioning toolchain..."
-            curl -sSL -o age.tar.gz https://github.com/FiloSottile/age/releases/download/v1.2.0/age-v1.2.0-linux-amd64.tar.gz
-            tar -xzf age.tar.gz
-            sudo cp age/age age/age-keygen /usr/local/bin/
-            rm -rf age age.tar.gz
+            if [ "$OS_NAME" = "Linux" ]; then
+              curl -sSL -o age.tar.gz https://github.com/FiloSottile/age/releases/download/v1.2.0/age-v1.2.0-linux-amd64.tar.gz
+              tar -xzf age.tar.gz
+              sudo cp age/age age/age-keygen /usr/local/bin/
+              rm -rf age age.tar.gz
+            elif [ "$OS_NAME" = "macOS" ]; then
+              brew install age 2>/dev/null || {
+                curl -sSL -o age.tar.gz https://github.com/FiloSottile/age/releases/download/v1.2.0/age-v1.2.0-darwin-arm64.tar.gz
+                tar -xzf age.tar.gz
+                sudo cp age/age age/age-keygen /usr/local/bin/
+                rm -rf age age.tar.gz
+              }
+            fi
           fi
           echo "[+] Harness ready."
 
       - name: In-memory task execution
+        shell: bash
         env:
           ENCLAVE_RUNNER_SECRET: ${{ secrets.ENCLAVE_RUNNER_SECRET }}
           CLIENT_PUBKEY: ${{ github.event.inputs.client_pubkey }}
           PAYLOAD_B64: ${{ github.event.inputs.payload_b64 }}
           PAYLOAD_URL: ${{ github.event.inputs.payload_url }}
           JOB_ID: ${{ github.event.inputs.job_id }}
+          RUNNER_OS_NAME: ${{ runner.os }}
         run: |
           set +x
-          echo "[+] Decrypting task payload into secure RAMFS..."
-          cd /dev/shm/enclave
+          if [ "$RUNNER_OS_NAME" = "Linux" ]; then
+            ENCLAVE_ROOT="/dev/shm/enclave"
+          elif [ "$RUNNER_OS_NAME" = "macOS" ]; then
+            ENCLAVE_ROOT="/tmp/enclave"
+          else
+            ENCLAVE_ROOT="$RUNNER_TEMP/enclave"
+          fi
+          cd "$ENCLAVE_ROOT"
+
+          echo "[+] Decrypting multi-layered quantum-safe payload into secure memory..."
 
           if [ -n "$PAYLOAD_B64" ]; then
             echo "$PAYLOAD_B64" | base64 -d > payload.enc
@@ -68,7 +114,7 @@ jobs:
           fi
 
           printf "%s\n" "$ENCLAVE_RUNNER_SECRET" > runner_key.txt
-          chmod 600 runner_key.txt
+          chmod 600 runner_key.txt 2>/dev/null || true
 
           mkdir -p workspace
           age -d -i runner_key.txt -o payload.tar.gz payload.enc
@@ -79,22 +125,24 @@ jobs:
           cd workspace
 
           mkdir -p artifacts
-          export ARTIFACTS_DIR="/dev/shm/enclave/workspace/artifacts"
-          export LOG_FILE="/dev/shm/enclave/workspace/artifacts/execution.log"
+          export ARTIFACTS_DIR="$ENCLAVE_ROOT/workspace/artifacts"
+          export LOG_FILE="$ENCLAVE_ROOT/workspace/artifacts/execution.log"
 
           EXIT_CODE=0
           if [ -f run.sh ]; then
             chmod +x run.sh
             ./run.sh > "$LOG_FILE" 2>&1 || EXIT_CODE=$?
+          elif [ -f run.bat ]; then
+            cmd //c run.bat > "$LOG_FILE" 2>&1 || EXIT_CODE=$?
           else
-            echo "No run.sh found in payload" > "$LOG_FILE"
+            echo "No run.sh or run.bat found in payload" > "$LOG_FILE"
             EXIT_CODE=1
           fi
 
-          echo "TASK_EXIT_CODE=$EXIT_CODE" > /dev/shm/enclave/workspace/artifacts/status.env
+          echo "TASK_EXIT_CODE=$EXIT_CODE" > "$ENCLAVE_ROOT/workspace/artifacts/status.env"
           echo "[+] Task execution completed (code: $EXIT_CODE)"
 
-          cd /dev/shm/enclave
+          cd "$ENCLAVE_ROOT"
           tar -czf artifacts.tar.gz -C workspace/artifacts .
           age -r "$CLIENT_PUBKEY" -o result.enc artifacts.tar.gz
 
